@@ -7,39 +7,43 @@
 #include <klee/Expr/ArrayCache.h>
 #include <klee/Solver/Solver.h>
 
-class XBitVector {
+namespace clover {
+
+class BitVector {
 private:
 	klee::ref<klee::Expr> expr;
 
-	XBitVector(const klee::ref<klee::Expr> &expr);
+	BitVector(const klee::ref<klee::Expr> &expr);
 
 public:
-	XBitVector(int64_t value, uint64_t size);
-	XBitVector(const klee::Array *array);
+	BitVector(int64_t value, uint64_t size);
+	BitVector(const klee::Array *array);
 
-	std::shared_ptr<XBitVector> add(std::shared_ptr<XBitVector> other);
-	std::shared_ptr<XBitVector> slt(std::shared_ptr<XBitVector> other);
+	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
+	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
 
 	/* TODO: add to_query method and remove friend class */
-	friend class XSolver;
+	friend class Solver;
 };
 
-class XSolver {
+class Solver {
 private:
 	klee::Solver *solver;
 	klee::ArrayCache array_cache;
 
 public:
-	XSolver(klee::Solver *_solver = NULL);
+	Solver(klee::Solver *_solver = NULL);
 
 	int eval(const klee::Query &query);
-	int eval(std::shared_ptr<XBitVector> bv);
+	int eval(std::shared_ptr<BitVector> bv);
 
 	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
-	uint64_t evalValue(std::shared_ptr<XBitVector> bv, unsigned bits = 64);
+	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
 
-	std::shared_ptr<XBitVector> BVS(std::string name, uint64_t size);
-	std::shared_ptr<XBitVector> BVV(int64_t value, uint64_t size);
+	std::shared_ptr<BitVector> BVS(std::string name, uint64_t size);
+	std::shared_ptr<BitVector> BVV(int64_t value, uint64_t size);
+};
+
 };
 
 #endif

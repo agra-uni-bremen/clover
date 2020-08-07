@@ -2,7 +2,9 @@
 
 #include <klee/Expr/Constraints.h>
 
-XSolver::XSolver(klee::Solver *_solver)
+using namespace clover;
+
+Solver::Solver(klee::Solver *_solver)
 {
 	if (!_solver)
 		_solver = klee::createCoreSolver(klee::CoreSolverType::STP_SOLVER);
@@ -12,7 +14,7 @@ XSolver::XSolver(klee::Solver *_solver)
 }
 
 int
-XSolver::eval(const klee::Query &query)
+Solver::eval(const klee::Query &query)
 {
 	klee::Solver::Validity v;
 
@@ -30,7 +32,7 @@ XSolver::eval(const klee::Query &query)
 }
 
 int
-XSolver::eval(std::shared_ptr<XBitVector> bv)
+Solver::eval(std::shared_ptr<BitVector> bv)
 {
 	klee::ConstraintSet cs;
 
@@ -39,7 +41,7 @@ XSolver::eval(std::shared_ptr<XBitVector> bv)
 }
 
 uint64_t
-XSolver::evalValue(const klee::Query &query, unsigned bits)
+Solver::evalValue(const klee::Query &query, unsigned bits)
 {
 	klee::ref<klee::ConstantExpr> r;
 
@@ -50,7 +52,7 @@ XSolver::evalValue(const klee::Query &query, unsigned bits)
 }
 
 uint64_t
-XSolver::evalValue(std::shared_ptr<XBitVector> bv, unsigned bits)
+Solver::evalValue(std::shared_ptr<BitVector> bv, unsigned bits)
 {
 	klee::ConstraintSet cs;
 
@@ -58,19 +60,19 @@ XSolver::evalValue(std::shared_ptr<XBitVector> bv, unsigned bits)
 	return this->evalValue(q, bits);
 }
 
-std::shared_ptr<XBitVector>
-XSolver::BVS(std::string name, uint64_t size)
+std::shared_ptr<BitVector>
+Solver::BVS(std::string name, uint64_t size)
 {
 	const klee::Array *array;
 
 	array = array_cache.CreateArray(name, size);
-	auto bv = XBitVector(array);
+	auto bv = BitVector(array);
 
-	return std::make_shared<XBitVector>(bv);
+	return std::make_shared<BitVector>(bv);
 }
 
-std::shared_ptr<XBitVector>
-XSolver::BVV(int64_t value, uint64_t size)
+std::shared_ptr<BitVector>
+Solver::BVV(int64_t value, uint64_t size)
 {
-	return std::make_shared<XBitVector>(value, size);
+	return std::make_shared<BitVector>(value, size);
 }
