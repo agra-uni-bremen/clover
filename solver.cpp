@@ -38,6 +38,26 @@ XSolver::eval(std::shared_ptr<XBitVector> bv)
 	return this->eval(q);
 }
 
+uint64_t
+XSolver::evalValue(const klee::Query &query, unsigned bits)
+{
+	klee::ref<klee::ConstantExpr> r;
+
+	if (!solver->getValue(query, r))
+		throw std::runtime_error("getValue() failed for solver");
+
+	return r->getZExtValue(bits);
+}
+
+uint64_t
+XSolver::evalValue(std::shared_ptr<XBitVector> bv, unsigned bits)
+{
+	klee::ConstraintSet cs;
+
+	auto q = klee::Query(cs, bv->expr);
+	return this->evalValue(q, bits);
+}
+
 std::shared_ptr<XBitVector>
 XSolver::BVS(std::string name, uint64_t size)
 {

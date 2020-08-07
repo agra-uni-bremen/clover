@@ -35,6 +35,9 @@ public:
 	int eval(const klee::Query &query);
 	int eval(std::shared_ptr<XBitVector> bv);
 
+	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
+	uint64_t evalValue(std::shared_ptr<XBitVector> bv, unsigned bits = 64);
+
 	std::shared_ptr<XBitVector> BVS(std::string name, uint64_t size);
 	std::shared_ptr<XBitVector> BVV(int64_t value, uint64_t size);
 };
