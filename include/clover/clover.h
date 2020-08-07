@@ -56,6 +56,8 @@ public:
 
 	std::shared_ptr<BitVector> BVS(std::string name, uint64_t size);
 	std::shared_ptr<BitVector> BVV(int64_t value, uint64_t size);
+
+	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size, int64_t value);
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
 };
 
