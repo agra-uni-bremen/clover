@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include <clover/clover.h>
 
 #include <klee/Expr/Constraints.h>
@@ -75,4 +77,17 @@ std::shared_ptr<BitVector>
 Solver::BVV(int64_t value, uint64_t size)
 {
 	return std::make_shared<BitVector>(value, size);
+}
+
+std::shared_ptr<ConcolicValue>
+Solver::BVC(std::string name, uint64_t size)
+{
+	/* TODO: improve random number generation */
+	uint64_t value = rand();
+
+	auto bvv = this->BVV(value, size);
+	auto bvs = this->BVS(name, size);
+
+	auto bvc = ConcolicValue(*bvv, *bvs);
+	return std::make_shared<ConcolicValue>(bvc);
 }

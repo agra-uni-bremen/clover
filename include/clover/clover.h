@@ -26,6 +26,17 @@ public:
 	friend class Solver;
 };
 
+class ConcolicValue {
+public:
+	BitVector concrete;
+	BitVector symbolic;
+
+private:
+	ConcolicValue(BitVector _concrete, BitVector _symbolic);
+
+	friend class Solver;
+};
+
 class Solver {
 private:
 	klee::Solver *solver;
@@ -42,6 +53,7 @@ public:
 
 	std::shared_ptr<BitVector> BVS(std::string name, uint64_t size);
 	std::shared_ptr<BitVector> BVV(int64_t value, uint64_t size);
+	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
 };
 
 };
