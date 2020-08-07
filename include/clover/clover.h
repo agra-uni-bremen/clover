@@ -28,11 +28,14 @@ public:
 
 class ConcolicValue {
 public:
-	BitVector concrete;
-	BitVector symbolic;
+	std::shared_ptr<BitVector> concrete;
+	std::shared_ptr<BitVector> symbolic;
+
+	/* TODO: Modify this instead of returning new value? */
+	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 
 private:
-	ConcolicValue(BitVector _concrete, BitVector _symbolic);
+	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::shared_ptr<BitVector> _symbolic);
 
 	friend class Solver;
 };

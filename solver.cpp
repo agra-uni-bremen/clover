@@ -88,6 +88,6 @@ Solver::BVC(std::string name, uint64_t size)
 	auto bvv = this->BVV(value, size);
 	auto bvs = this->BVS(name, size);
 
-	auto bvc = ConcolicValue(*bvv, *bvs);
+	auto bvc = ConcolicValue(bvv, bvs);
 	return std::make_shared<ConcolicValue>(bvc);
 }
