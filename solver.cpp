@@ -95,3 +95,12 @@ Solver::BVC(std::string name, uint64_t size)
 	/* TODO: improve random number generation */
 	return this->BVC(name, size, rand());
 }
+
+std::shared_ptr<ConcolicValue>
+Solver::BVC(int64_t value, uint64_t size)
+{
+	auto bvv = this->BVV(value, size);
+	auto bvc = ConcolicValue(bvv);
+
+	return std::make_shared<ConcolicValue>(bvc);
+}

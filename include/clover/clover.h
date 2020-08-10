@@ -2,6 +2,7 @@
 #define CLOVER_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include <klee/Expr/Expr.h>
 #include <klee/Expr/ArrayCache.h>
@@ -34,8 +35,10 @@ public:
 	/* TODO: Modify this instead of returning new value? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 
+	bool hasSymbolic(void);
 private:
 	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::shared_ptr<BitVector> _symbolic);
+	ConcolicValue(std::shared_ptr<BitVector> _concrete);
 
 	friend class Solver;
 };
@@ -59,6 +62,7 @@ public:
 
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size, int64_t value);
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
+	std::shared_ptr<ConcolicValue> BVC(int64_t value, uint64_t size);
 };
 
 };

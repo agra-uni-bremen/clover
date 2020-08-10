@@ -8,6 +8,12 @@ ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete, std::shared_p
 	return;
 }
 
+ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete)
+		: concrete(_concrete), symbolic(nullptr)
+{
+	return;
+}
+
 std::shared_ptr<ConcolicValue>
 ConcolicValue::add(std::shared_ptr<ConcolicValue> other)
 {
@@ -16,4 +22,9 @@ ConcolicValue::add(std::shared_ptr<ConcolicValue> other)
 
 	auto bvc = ConcolicValue(bvv, bvs);
 	return std::make_shared<ConcolicValue>(bvc);
+}
+
+bool
+ConcolicValue::hasSymbolic(void) {
+	return this->symbolic == nullptr;
 }
