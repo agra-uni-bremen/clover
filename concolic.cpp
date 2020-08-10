@@ -18,10 +18,18 @@ std::shared_ptr<ConcolicValue>
 ConcolicValue::add(std::shared_ptr<ConcolicValue> other)
 {
 	auto bvv = concrete->add(other->concrete);
-	auto bvs = symbolic->add(other->symbolic);
 
-	auto bvc = ConcolicValue(bvv, bvs);
-	return std::make_shared<ConcolicValue>(bvc);
+	std::shared_ptr<BitVector> bvs_this = (this->hasSymbolic()) ?
+		this->symbolic : this->concrete;
+	std::shared_ptr<BitVector> bvs_other = (other->hasSymbolic()) ?
+		other->symbolic : other->concrete;
+
+	if (this->hasSymbolic() || other->hasSymbolic()) {
+		auto bvs = bvs_this->add(bvs_other);
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv, bvs));
+	} else {
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
+	}
 }
 
 bool
