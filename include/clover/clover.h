@@ -4,19 +4,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <klee/Expr/Expr.h>
 #include <klee/Expr/ArrayCache.h>
+#include <klee/Expr/Constraints.h>
+#include <klee/Expr/Expr.h>
 #include <klee/Solver/Solver.h>
 
 namespace clover {
 
 class BitVector {
 private:
-	klee::ref<klee::Expr> expr;
-
 	BitVector(const klee::ref<klee::Expr> &expr);
 
 public:
+	klee::ref<klee::Expr> expr;
+
 	BitVector(int64_t value, uint64_t size);
 	BitVector(const klee::Array *array);
 
@@ -66,6 +67,18 @@ public:
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size, int64_t value);
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
 	std::shared_ptr<ConcolicValue> BVC(int64_t value, uint64_t size);
+};
+
+class Trace {
+private:
+	klee::ConstraintSet cs;
+	klee::ConstraintManager csm;
+	Solver &solver;
+
+public:
+	Trace(Solver &_solver);
+
+	void add(klee::ref<klee::Expr> expr);
 };
 
 };
