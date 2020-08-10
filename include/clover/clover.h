@@ -74,6 +74,8 @@ private:
 	std::vector<std::shared_ptr<BitVector>> pathCons;
 	Solver &solver;
 
+	void negateRandom(void);
+
 public:
 	Trace(Solver &_solver);
 
