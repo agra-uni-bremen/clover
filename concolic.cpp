@@ -26,5 +26,5 @@ ConcolicValue::add(std::shared_ptr<ConcolicValue> other)
 
 bool
 ConcolicValue::hasSymbolic(void) {
-	return this->symbolic == nullptr;
+	return this->symbolic != nullptr;
 }
