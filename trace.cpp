@@ -3,14 +3,14 @@
 using namespace clover;
 
 Trace::Trace(Solver &_solver)
-		: solver(_solver), csm(cs)
+		: solver(_solver)
 {
 	return;
 }
 
 void
-Trace::add(klee::ref<klee::Expr> expr)
+Trace::add(std::shared_ptr<BitVector> bv)
 {
-	csm.addConstraint(expr);
+	pathCons.push_back(bv);
 	return;
 }

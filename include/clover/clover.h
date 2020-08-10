@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 #include <klee/Expr/ArrayCache.h>
-#include <klee/Expr/Constraints.h>
 #include <klee/Expr/Expr.h>
 #include <klee/Solver/Solver.h>
 
@@ -71,14 +70,13 @@ public:
 
 class Trace {
 private:
-	klee::ConstraintSet cs;
-	klee::ConstraintManager csm;
+	std::vector<std::shared_ptr<BitVector>> pathCons;
 	Solver &solver;
 
 public:
 	Trace(Solver &_solver);
 
-	void add(klee::ref<klee::Expr> expr);
+	void add(std::shared_ptr<BitVector> bv);
 };
 
 };
