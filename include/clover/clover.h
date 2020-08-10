@@ -8,6 +8,8 @@
 #include <klee/Expr/Expr.h>
 #include <klee/Solver/Solver.h>
 
+#include <map>
+
 namespace clover {
 
 class BitVector {
@@ -74,12 +76,14 @@ private:
 	std::vector<std::shared_ptr<BitVector>> pathCons;
 	Solver &solver;
 
-	void negateRandom(void);
+	size_t getRandomPathCond(void);
 
 public:
 	Trace(Solver &_solver);
 
 	void add(std::shared_ptr<BitVector> bv);
+	klee::Query negateRandom(void);
+	std::map<std::string, int64_t> getConcreteStore(void);
 };
 
 };
