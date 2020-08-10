@@ -36,6 +36,7 @@ public:
 
 	/* TODO: Modify this instead of returning new value? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 
 	bool hasSymbolic(void);
 private:
