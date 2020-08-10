@@ -77,12 +77,12 @@ private:
 	Solver &solver;
 
 	size_t getRandomPathCond(void);
+	klee::Query negateRandom(void);
 
 public:
 	Trace(Solver &_solver);
 
 	void add(std::shared_ptr<BitVector> bv);
-	klee::Query negateRandom(void);
 	std::map<std::string, int64_t> getConcreteStore(void);
 };
 

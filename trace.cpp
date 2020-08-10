@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 
+#include <klee/Expr/ExprUtil.h>
 #include <klee/Expr/Constraints.h>
 #include <clover/clover.h>
 
@@ -47,6 +48,13 @@ Trace::negateRandom(void)
 std::map<std::string, int64_t>
 Trace::getConcreteStore(void)
 {
+	auto query = negateRandom();
+	std::vector<const klee::Array *> objects;
+
+	klee::findSymbolicObjects(query.expr, objects);
+	for (auto e : query.constraints)
+		klee::findSymbolicObjects(e, objects);
+
 	std::map<std::string, int64_t> store;
 	return store;
 }
