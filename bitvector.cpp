@@ -3,7 +3,7 @@
 
 using namespace clover;
 
-static unsigned
+static size_t
 toBits(unsigned size)
 {
     return size * 8;
@@ -15,14 +15,25 @@ BitVector::BitVector(const klee::ref<klee::Expr> &_expr)
 	return;
 }
 
-BitVector::BitVector(int64_t value, uint64_t size)
+BitVector::BitVector(IntValue value)
 {
-	unsigned bitsize;
+	size_t bytesize, bitsize;
+
+	uint64_t exprValue;
+	if (std::get_if<uint8_t>(&value) != nullptr) {
+		bytesize = sizeof(uint8_t);
+		exprValue = std::get<uint8_t>(value);
+	} else if (std::get_if<uint32_t>(&value) != nullptr) {
+		bytesize = sizeof(uint32_t);
+		exprValue = std::get<uint32_t>(value);
+	} else {
+		assert(0);
+	}
 
 	/* Passed size in bytes, we need to convert it to bits. */
-	bitsize = toBits(size);
+	bitsize = toBits(bytesize);
 
-	this->expr = klee::ConstantExpr::create(value, bitsize);
+	this->expr = klee::ConstantExpr::create(exprValue, (unsigned)bitsize);
 }
 
 BitVector::BitVector(const klee::Array *array)

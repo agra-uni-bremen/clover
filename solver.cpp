@@ -60,15 +60,15 @@ Solver::evalValue(std::shared_ptr<BitVector> bv, unsigned bits)
 }
 
 std::shared_ptr<ConcolicValue>
-Solver::BVC(std::optional<std::string> name, int64_t value, uint64_t size)
+Solver::BVC(std::optional<std::string> name, IntValue value)
 {
-	auto concrete = std::make_shared<BitVector>(value, size);
+	auto concrete = std::make_shared<BitVector>(value);
 	if (!name.has_value()) {
 		auto concolic = ConcolicValue(concrete);
 		return std::make_shared<ConcolicValue>(concolic);
 	}
 
-	auto array = array_cache.CreateArray(*name, size);
+	auto array = array_cache.CreateArray(*name, getByteSize(value));
 	auto symbolic = std::make_shared<BitVector>(array);
 
 	auto concolic = ConcolicValue(concrete, symbolic);

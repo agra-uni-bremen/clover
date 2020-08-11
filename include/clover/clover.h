@@ -11,12 +11,23 @@
 
 #include <map>
 #include <optional>
+#include <variant>
 
 namespace clover {
 
-/* TODO: Add a union for representing concrete values. This should
- * include uint8_t for memory bytes and uint32 (or int32_t) for
- * registers */
+typedef std::variant<uint8_t, uint32_t> IntValue;
+
+/* TODO: Remove code duplication with BitVector constructor */
+static size_t
+getByteSize(IntValue v)
+{
+	if (std::get_if<uint8_t>(&v) != nullptr)
+		return sizeof(uint8_t);
+	else if (std::get_if<uint32_t>(&v) != nullptr)
+		return sizeof(uint32_t);
+	else
+		assert(0);
+}
 
 class BitVector {
 private:
@@ -24,8 +35,7 @@ private:
 	klee::ref<klee::Expr> expr;
 
 public:
-
-	BitVector(int64_t value, uint64_t size);
+	BitVector(IntValue value);
 	BitVector(const klee::Array *array);
 
 	klee::Query toQuery(klee::ConstraintSet &cs);
@@ -72,7 +82,7 @@ public:
 	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
 	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
 
-	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, int64_t value, uint64_t size);
+	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 
 	/* TODO: Provide a wrapper for getInitialValues and remove this */
 	friend class Trace;
