@@ -82,6 +82,6 @@ Trace::getStore(void)
 		auto value = b.second;
 
 		std::string name = b.first->getName();
-		std::cout << "VAR: name = " << array->getSize() << std::endl;
+		std::cout << "VAR: " << name << " = " << array->getSize() << std::endl;
 	}
 }
