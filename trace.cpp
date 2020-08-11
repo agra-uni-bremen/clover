@@ -30,12 +30,11 @@ Trace::add(std::shared_ptr<BitVector> bv)
 }
 
 std::optional<klee::Query>
-Trace::negateRandom(void)
+Trace::negateRandom(klee::ConstraintSet &cs)
 {
 	if (this->pathCons.empty())
 		return {};
 
-	klee::ConstraintSet cs;
 	auto cm = klee::ConstraintManager(cs);
 
 	size_t i = 0;
@@ -53,7 +52,9 @@ Trace::negateRandom(void)
 std::optional<klee::Assignment>
 Trace::generateNewAssign(void)
 {
-	auto query = negateRandom();
+	klee::ConstraintSet cs;
+
+	auto query = negateRandom(cs);
 	if (!query.has_value())
 		return {};
 

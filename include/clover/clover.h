@@ -82,7 +82,7 @@ private:
 	Solver &solver;
 
 	size_t getRandomPathCond(void);
-	std::optional<klee::Query> negateRandom(void);
+	std::optional<klee::Query> negateRandom(klee::ConstraintSet &cs);
 	std::optional<klee::Assignment> generateNewAssign(void);
 
 public:
