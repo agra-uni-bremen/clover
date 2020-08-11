@@ -40,7 +40,6 @@ public:
 	std::shared_ptr<BitVector> concrete;
 	std::optional<std::shared_ptr<BitVector>> symbolic;
 
-	/* TODO: Resolve duplication with BitVector class */
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
@@ -58,6 +57,7 @@ private:
 
 public:
 	Solver(klee::Solver *_solver = NULL);
+	klee::Assignment getAssignment(const klee::Query &query);
 
 	int eval(const klee::Query &query);
 	int eval(std::shared_ptr<BitVector> bv);
@@ -67,9 +67,6 @@ public:
 	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
 
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
-
-	/* TODO: Provide a wrapper for getInitialValues and remove this */
-	friend class Trace;
 };
 
 typedef std::map<std::string, IntValue> ConcreteStore;

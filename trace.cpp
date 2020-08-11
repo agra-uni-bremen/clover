@@ -64,16 +64,7 @@ Trace::generateNewAssign(void)
 	if (!query.has_value())
 		return {};
 
-	std::vector<const klee::Array *> objects;
-	klee::findSymbolicObjects(query->expr, objects);
-	for (auto e : query->constraints)
-		klee::findSymbolicObjects(e, objects);
-
-	std::vector<std::vector<unsigned char>> values;
-	if (!solver.solver->getInitialValues(*query, objects, values))
-		return {}; /* unsat */
-
-	return klee::Assignment(objects, values);
+	return solver.getAssignment(*query);
 }
 
 std::optional<ConcreteStore>

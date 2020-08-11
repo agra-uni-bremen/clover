@@ -3,6 +3,7 @@
 
 #include <clover/clover.h>
 
+#include <klee/Expr/ExprUtil.h>
 #include <klee/Expr/Constraints.h>
 
 #include "fns.h"
@@ -16,6 +17,21 @@ Solver::Solver(klee::Solver *_solver)
 
 	this->solver = _solver;
 	return;
+}
+
+klee::Assignment
+Solver::getAssignment(const klee::Query &query)
+{
+	std::vector<const klee::Array *> objects;
+	klee::findSymbolicObjects(query.expr, objects);
+	for (auto e : query.constraints)
+		klee::findSymbolicObjects(e, objects);
+
+	std::vector<std::vector<unsigned char>> values;
+	if (!solver->getInitialValues(query, objects, values))
+		return {}; /* unsat */
+
+	return klee::Assignment(objects, values);
 }
 
 int
