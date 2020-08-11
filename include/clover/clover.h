@@ -17,18 +17,6 @@ namespace clover {
 
 typedef std::variant<uint8_t, uint32_t> IntValue;
 
-/* TODO: Remove code duplication with BitVector constructor */
-static size_t
-getByteSize(IntValue v)
-{
-	if (std::get_if<uint8_t>(&v) != nullptr)
-		return sizeof(uint8_t);
-	else if (std::get_if<uint32_t>(&v) != nullptr)
-		return sizeof(uint32_t);
-	else
-		assert(0);
-}
-
 class BitVector {
 private:
 	BitVector(const klee::ref<klee::Expr> &expr);
@@ -98,7 +86,6 @@ private:
 	size_t getRandomPathCond(void);
 	std::optional<klee::Query> negateRandom(klee::ConstraintSet &cs);
 	std::optional<klee::Assignment> generateNewAssign(void);
-	IntValue convertResult(std::vector<unsigned char> res);
 
 public:
 	Trace(Solver &_solver);

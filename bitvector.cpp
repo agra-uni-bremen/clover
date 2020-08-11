@@ -1,6 +1,8 @@
 #include <klee/Expr/ExprBuilder.h>
 #include <clover/clover.h>
 
+#include "fns.h"
+
 using namespace clover;
 
 static size_t
@@ -19,20 +21,10 @@ BitVector::BitVector(IntValue value)
 {
 	size_t bytesize, bitsize;
 
-	uint64_t exprValue;
-	if (std::get_if<uint8_t>(&value) != nullptr) {
-		bytesize = sizeof(uint8_t);
-		exprValue = std::get<uint8_t>(value);
-	} else if (std::get_if<uint32_t>(&value) != nullptr) {
-		bytesize = sizeof(uint32_t);
-		exprValue = std::get<uint32_t>(value);
-	} else {
-		assert(0);
-	}
-
-	/* Passed size in bytes, we need to convert it to bits. */
+	bytesize = intByteSize(value);
 	bitsize = toBits(bytesize);
 
+	uint64_t exprValue = intToUint(value);
 	this->expr = klee::ConstantExpr::create(exprValue, (unsigned)bitsize);
 }
 

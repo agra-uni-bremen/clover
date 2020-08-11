@@ -5,6 +5,8 @@
 
 #include <klee/Expr/Constraints.h>
 
+#include "fns.h"
+
 using namespace clover;
 
 Solver::Solver(klee::Solver *_solver)
@@ -68,7 +70,7 @@ Solver::BVC(std::optional<std::string> name, IntValue value)
 		return std::make_shared<ConcolicValue>(concolic);
 	}
 
-	auto array = array_cache.CreateArray(*name, getByteSize(value));
+	auto array = array_cache.CreateArray(*name, intByteSize(value));
 	auto symbolic = std::make_shared<BitVector>(array);
 
 	auto concolic = ConcolicValue(concrete, symbolic);

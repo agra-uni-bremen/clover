@@ -1,11 +1,12 @@
 #include <assert.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
 
 #include <klee/Expr/ExprUtil.h>
 #include <klee/Expr/Constraints.h>
 #include <clover/clover.h>
+
+#include "fns.h"
 
 using namespace clover;
 
@@ -75,31 +76,6 @@ Trace::generateNewAssign(void)
 	return klee::Assignment(objects, values);
 }
 
-IntValue
-Trace::convertResult(std::vector<unsigned char> res)
-{
-	IntValue intval;
-
-	switch (res.size()) {
-	case 1: {
-		uint8_t v;
-		memcpy(&v, &res[0], sizeof(uint8_t));
-		intval = v;
-	}
-		break;
-	case 4: {
-		uint32_t v;
-		memcpy(&v, &res[0], sizeof(uint32_t));
-		intval = v;
-	}
-		break;
-	default:
-		assert(0);
-	}
-
-	return intval;
-}
-
 std::optional<ConcreteStore>
 Trace::getStore(void)
 {
@@ -116,7 +92,7 @@ Trace::getStore(void)
 		auto value = b.second;
 
 		std::string name = b.first->getName();
-		store[name] = convertResult(value);
+		store[name] = intFromVector(value);
 	}
 
 	return store;
