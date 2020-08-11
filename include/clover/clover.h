@@ -4,11 +4,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <klee/Expr/Assignment.h>
 #include <klee/Expr/ArrayCache.h>
 #include <klee/Expr/Expr.h>
 #include <klee/Solver/Solver.h>
 
 #include <map>
+#include <optional>
 
 namespace clover {
 
@@ -69,6 +71,9 @@ public:
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size, int64_t value);
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
 	std::shared_ptr<ConcolicValue> BVC(int64_t value, uint64_t size);
+
+	/* TODO: Provide a wrapper for getInitialValues and remove this */
+	friend class Trace;
 };
 
 class Trace {
@@ -83,7 +88,7 @@ public:
 	Trace(Solver &_solver);
 
 	void add(std::shared_ptr<BitVector> bv);
-	std::map<std::string, int64_t> getConcreteStore(void);
+	std::optional<klee::Assignment> generateNewAssign(void);
 };
 
 };

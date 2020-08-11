@@ -45,8 +45,8 @@ Trace::negateRandom(void)
 	return klee::Query(cs, expr);
 }
 
-std::map<std::string, int64_t>
-Trace::getConcreteStore(void)
+std::optional<klee::Assignment>
+Trace::generateNewAssign(void)
 {
 	auto query = negateRandom();
 	std::vector<const klee::Array *> objects;
@@ -55,6 +55,9 @@ Trace::getConcreteStore(void)
 	for (auto e : query.constraints)
 		klee::findSymbolicObjects(e, objects);
 
-	std::map<std::string, int64_t> store;
-	return store;
+	std::vector<std::vector<unsigned char> > values;
+	if (!solver.solver->getInitialValues(query, objects, values))
+		return {}; /* unsat */
+
+	return klee::Assignment(objects, values);
 }
