@@ -63,7 +63,7 @@ Trace::generateNewAssign(void)
 	for (auto e : query->constraints)
 		klee::findSymbolicObjects(e, objects);
 
-	std::vector<std::vector<unsigned char> > values;
+	std::vector<std::vector<unsigned char>> values;
 	if (!solver.solver->getInitialValues(*query, objects, values))
 		return {}; /* unsat */
 
