@@ -43,7 +43,7 @@ public:
 class ConcolicValue {
 public:
 	std::shared_ptr<BitVector> concrete;
-	std::shared_ptr<BitVector> symbolic;
+	std::shared_ptr<BitVector> symbolic; /* TODO: make this std::optional */
 
 	/* TODO: Resolve duplication with BitVector class */
 	/* TODO: Autogenerate these methods using a macro? */
@@ -72,10 +72,7 @@ public:
 	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
 	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
 
-	/* TODO: Somehow cleanup these three constructors. */
-	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size, int64_t value);
-	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
-	std::shared_ptr<ConcolicValue> BVC(int64_t value, uint64_t size);
+	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, int64_t value, uint64_t size);
 
 	/* TODO: Provide a wrapper for getInitialValues and remove this */
 	friend class Trace;

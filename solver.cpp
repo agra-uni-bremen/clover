@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 
 #include <clover/clover.h>
@@ -59,29 +60,17 @@ Solver::evalValue(std::shared_ptr<BitVector> bv, unsigned bits)
 }
 
 std::shared_ptr<ConcolicValue>
-Solver::BVC(std::string name, uint64_t size, int64_t value)
+Solver::BVC(std::optional<std::string> name, int64_t value, uint64_t size)
 {
-	auto array = array_cache.CreateArray(name, size);
+	auto concrete = std::make_shared<BitVector>(value, size);
+	if (!name.has_value()) {
+		auto concolic = ConcolicValue(concrete);
+		return std::make_shared<ConcolicValue>(concolic);
+	}
 
-	auto bvv = std::make_shared<BitVector>(value, size);
-	auto bvs = std::make_shared<BitVector>(array);
+	auto array = array_cache.CreateArray(*name, size);
+	auto symbolic = std::make_shared<BitVector>(array);
 
-	auto bvc = ConcolicValue(bvv, bvs);
-	return std::make_shared<ConcolicValue>(bvc);
-}
-
-std::shared_ptr<ConcolicValue>
-Solver::BVC(std::string name, uint64_t size)
-{
-	/* TODO: improve random number generation */
-	return this->BVC(name, size, rand());
-}
-
-std::shared_ptr<ConcolicValue>
-Solver::BVC(int64_t value, uint64_t size)
-{
-	auto bvv = std::make_shared<BitVector>(value, size);
-	auto bvc = ConcolicValue(bvv);
-
-	return std::make_shared<ConcolicValue>(bvc);
+	auto concolic = ConcolicValue(concrete, symbolic);
+	return std::make_shared<ConcolicValue>(concolic);
 }
