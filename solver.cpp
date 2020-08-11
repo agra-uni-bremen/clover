@@ -19,7 +19,7 @@ Solver::Solver(klee::Solver *_solver)
 	return;
 }
 
-klee::Assignment
+std::optional<klee::Assignment>
 Solver::getAssignment(const klee::Query &query)
 {
 	std::vector<const klee::Array *> objects;
@@ -29,7 +29,7 @@ Solver::getAssignment(const klee::Query &query)
 
 	std::vector<std::vector<unsigned char>> values;
 	if (!solver->getInitialValues(query, objects, values))
-		return {}; /* unsat */
+		return std::nullopt; /* unsat */
 
 	return klee::Assignment(objects, values);
 }

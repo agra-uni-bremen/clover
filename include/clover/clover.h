@@ -57,7 +57,7 @@ private:
 
 public:
 	Solver(klee::Solver *_solver = NULL);
-	klee::Assignment getAssignment(const klee::Query &query);
+	std::optional<klee::Assignment> getAssignment(const klee::Query &query);
 
 	int eval(const klee::Query &query);
 	int eval(std::shared_ptr<BitVector> bv);
@@ -76,18 +76,15 @@ private:
 	std::vector<std::shared_ptr<BitVector>> pathCons;
 	Solver &solver;
 
-	size_t getRandomPathCond(void);
-	std::optional<klee::Query> negateRandom(klee::ConstraintSet &cs);
-	std::optional<klee::Assignment> generateNewAssign(void);
+	klee::Query getQuery(klee::ConstraintSet &cs, size_t upto);
 
 public:
 	Trace(Solver &_solver);
 
-	/* TODO: Add different methods for finding new variable assignments */
-	/* TODO: Separete getStore() from path negation */
-
 	void add(std::shared_ptr<BitVector> bv);
-	std::optional<ConcreteStore> getStore(void);
+
+	std::optional<klee::Assignment> negateRandom(klee::ConstraintSet &cs);
+	ConcreteStore getStore(const klee::Assignment &assign);
 };
 
 };

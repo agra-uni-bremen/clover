@@ -16,18 +16,6 @@ Trace::Trace(Solver &_solver)
 	return;
 }
 
-size_t
-Trace::getRandomPathCond(void)
-{
-	size_t size = this->pathCons.size();
-
-	/* Modulo zero is undefined behaviour in C++ */
-	assert(size > 0);
-
-	int random = rand();
-	return (unsigned)random % size;
-}
-
 void
 Trace::add(std::shared_ptr<BitVector> bv)
 {
@@ -35,20 +23,18 @@ Trace::add(std::shared_ptr<BitVector> bv)
 	return;
 }
 
-std::optional<klee::Query>
-Trace::negateRandom(klee::ConstraintSet &cs)
+klee::Query
+Trace::getQuery(klee::ConstraintSet &cs, size_t upto)
 {
-	if (this->pathCons.empty())
-		return {};
+	if (upto >= pathCons.size())
+		throw std::out_of_range("upto exceeds amount of path constraints");
 
 	auto cm = klee::ConstraintManager(cs);
-
-	size_t i = 0;
-	size_t rindex = getRandomPathCond();
-	for (i = 0; i < rindex; i++)
+	size_t i;
+	for (i = 0; i < upto; i++)
 		cm.addConstraint(pathCons.at(i)->expr);
 
-	auto bv = pathCons.at(i)->neg();
+	auto bv = pathCons.at(i);
 	auto expr = cm.simplifyExpr(cs, bv->expr);
 
 	// XXX: Can we extract the constraints from cm instead?
@@ -56,26 +42,27 @@ Trace::negateRandom(klee::ConstraintSet &cs)
 }
 
 std::optional<klee::Assignment>
-Trace::generateNewAssign(void)
+Trace::negateRandom(klee::ConstraintSet &cs)
 {
-	klee::ConstraintSet cs;
+	if (pathCons.empty())
+		return std::nullopt; /* modulo zero is undefined */
 
-	auto query = negateRandom(cs);
-	if (!query.has_value())
-		return {};
+	int random = rand();
+	size_t rindex = (unsigned)random % pathCons.size();
+	auto query = getQuery(cs, rindex);
 
-	return solver.getAssignment(*query);
+	auto assign = solver.getAssignment(query);
+	if (!assign.has_value())
+		return std::nullopt; /* unsat */
+
+	return assign;
 }
 
-std::optional<ConcreteStore>
-Trace::getStore(void)
+ConcreteStore
+Trace::getStore(const klee::Assignment &assign)
 {
-	auto assign = generateNewAssign();
-	if (!assign.has_value())
-		return {};
-
 	ConcreteStore store;
-	for (auto const& b : assign->bindings) {
+	for (auto const& b : assign.bindings) {
 		auto array = b.first;
 		auto value = b.second;
 
