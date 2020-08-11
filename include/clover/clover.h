@@ -21,20 +21,22 @@ namespace clover {
 class BitVector {
 private:
 	BitVector(const klee::ref<klee::Expr> &expr);
+	klee::ref<klee::Expr> expr;
 
 public:
-	klee::ref<klee::Expr> expr;
 
 	BitVector(int64_t value, uint64_t size);
 	BitVector(const klee::Array *array);
+
+	klee::Query toQuery(klee::ConstraintSet &cs);
 
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> neg(void);
 
-	/* TODO: add to_query method and remove friend class */
-	friend class Solver;
+	/* TODO: remove this */
+	friend class Trace;
 };
 
 /* TODO: Make use of std::optional for symbolic part */

@@ -37,9 +37,7 @@ int
 Solver::eval(std::shared_ptr<BitVector> bv)
 {
 	klee::ConstraintSet cs;
-
-	auto q = klee::Query(cs, bv->expr);
-	return this->eval(q);
+	return this->eval(bv->toQuery(cs));
 }
 
 uint64_t
@@ -57,9 +55,7 @@ uint64_t
 Solver::evalValue(std::shared_ptr<BitVector> bv, unsigned bits)
 {
 	klee::ConstraintSet cs;
-
-	auto q = klee::Query(cs, bv->expr);
-	return this->evalValue(q, bits);
+	return this->evalValue(bv->toQuery(cs), bits);
 }
 
 std::shared_ptr<BitVector>

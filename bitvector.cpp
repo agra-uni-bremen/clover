@@ -37,6 +37,12 @@ BitVector::BitVector(const klee::Array *array)
 	this->expr = klee::Expr::createTempRead(array, bitsize);
 }
 
+klee::Query
+BitVector::toQuery(klee::ConstraintSet &cs)
+{
+	return klee::Query(cs, this->expr);
+}
+
 std::shared_ptr<BitVector>
 BitVector::add(std::shared_ptr<BitVector> other) {
 	auto exb = klee::createDefaultExprBuilder();
