@@ -67,6 +67,7 @@ public:
 	int eval(const klee::Query &query);
 	int eval(std::shared_ptr<BitVector> bv);
 
+	/* TODO: Return an IntVal here */
 	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
 	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
 
