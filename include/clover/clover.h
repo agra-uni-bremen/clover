@@ -88,7 +88,7 @@ public:
 	friend class Trace;
 };
 
-typedef std::map<std::string, int32_t> ConcreteStore;
+typedef std::map<std::string, IntValue> ConcreteStore;
 
 class Trace {
 private:
@@ -98,6 +98,7 @@ private:
 	size_t getRandomPathCond(void);
 	std::optional<klee::Query> negateRandom(klee::ConstraintSet &cs);
 	std::optional<klee::Assignment> generateNewAssign(void);
+	IntValue convertResult(std::vector<unsigned char> res);
 
 public:
 	Trace(Solver &_solver);

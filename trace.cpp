@@ -75,6 +75,31 @@ Trace::generateNewAssign(void)
 	return klee::Assignment(objects, values);
 }
 
+IntValue
+Trace::convertResult(std::vector<unsigned char> res)
+{
+	IntValue intval;
+
+	switch (res.size()) {
+	case 1: {
+		uint8_t v;
+		memcpy(&v, &res[0], sizeof(uint8_t));
+		intval = v;
+	}
+		break;
+	case 4: {
+		uint32_t v;
+		memcpy(&v, &res[0], sizeof(uint32_t));
+		intval = v;
+	}
+		break;
+	default:
+		assert(0);
+	}
+
+	return intval;
+}
+
 std::optional<ConcreteStore>
 Trace::getStore(void)
 {
@@ -91,11 +116,7 @@ Trace::getStore(void)
 		auto value = b.second;
 
 		std::string name = b.first->getName();
-
-		assert(array->getSize() == sizeof(store_value));
-		memcpy(&store_value, &value[0], sizeof(store_value));
-
-		store[name] = store_value;
+		store[name] = convertResult(value);
 	}
 
 	return store;
