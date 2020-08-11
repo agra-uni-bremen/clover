@@ -33,9 +33,6 @@ public:
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> neg(void);
 
-	/* TODO: Remove? expr is a public attribute nowadays */
-	void dump(void);
-
 	/* TODO: add to_query method and remove friend class */
 	friend class Solver;
 };
