@@ -14,6 +14,10 @@
 
 namespace clover {
 
+/* TODO: Add a union for representing concrete values. This should
+ * include uint8_t for memory bytes and uint32 (or int32_t) for
+ * registers */
+
 class BitVector {
 private:
 	BitVector(const klee::ref<klee::Expr> &expr);
@@ -24,22 +28,26 @@ public:
 	BitVector(int64_t value, uint64_t size);
 	BitVector(const klee::Array *array);
 
+	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> neg(void);
 
+	/* TODO: Remove? expr is a public attribute nowadays */
 	void dump(void);
 
 	/* TODO: add to_query method and remove friend class */
 	friend class Solver;
 };
 
+/* TODO: Make use of std::optional for symbolic part */
 class ConcolicValue {
 public:
 	std::shared_ptr<BitVector> concrete;
 	std::shared_ptr<BitVector> symbolic;
 
-	/* TODO: Modify this instead of returning new value? */
+	/* TODO: Resolve duplication with BitVector class */
+	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 
@@ -65,9 +73,12 @@ public:
 	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
 	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
 
+	/* TODO: Unclutter this factory, maybe even remove BitVector in
+	 * favor of ConcolicValue, i.e. only focus on cocolic execution? */
 	std::shared_ptr<BitVector> BVS(std::string name, uint64_t size);
 	std::shared_ptr<BitVector> BVV(int64_t value, uint64_t size);
 
+	/* TODO: Somehow cleanup these three constructors. */
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size, int64_t value);
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
 	std::shared_ptr<ConcolicValue> BVC(int64_t value, uint64_t size);
@@ -89,6 +100,9 @@ private:
 
 public:
 	Trace(Solver &_solver);
+
+	/* TODO: Add different methods for finding new variable assignments */
+	/* TODO: Separete getStore() from path negation */
 
 	void add(std::shared_ptr<BitVector> bv);
 	std::optional<ConcreteStore> getStore(void);
