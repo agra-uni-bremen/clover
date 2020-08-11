@@ -35,7 +35,6 @@ public:
 	friend class Trace;
 };
 
-/* TODO: Make use of std::optional for symbolic part */
 class ConcolicValue {
 public:
 	std::shared_ptr<BitVector> concrete;
