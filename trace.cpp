@@ -18,8 +18,13 @@ Trace::Trace(Solver &_solver)
 size_t
 Trace::getRandomPathCond(void)
 {
+	size_t size = this->pathCons.size();
+
+	/* Modulo zero is undefined behaviour in C++ */
+	assert(size > 0);
+
 	int random = rand();
-	return (unsigned)random % this->pathCons.size();
+	return (unsigned)random % size;
 }
 
 void
