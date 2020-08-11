@@ -1,11 +1,11 @@
+#include <assert.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
 
 #include <klee/Expr/ExprUtil.h>
 #include <klee/Expr/Constraints.h>
 #include <clover/clover.h>
-
-#include <iostream>
 
 using namespace clover;
 
@@ -70,18 +70,28 @@ Trace::generateNewAssign(void)
 	return klee::Assignment(objects, values);
 }
 
-bool
+std::optional<ConcreteStore>
 Trace::getStore(void)
 {
 	auto assign = generateNewAssign();
 	if (!assign.has_value())
-		return false;
+		return {};
 
+	/* XXX: We only support register values for now */
+	int32_t store_value;
+
+	ConcreteStore store;
 	for (auto const& b : assign->bindings) {
 		auto array = b.first;
 		auto value = b.second;
 
 		std::string name = b.first->getName();
-		std::cout << "VAR: " << name << " = " << array->getSize() << std::endl;
+
+		assert(array->getSize() == sizeof(store_value));
+		memcpy(&store_value, &value[0], sizeof(store_value));
+
+		store[name] = store_value;
 	}
+
+	return store;
 }

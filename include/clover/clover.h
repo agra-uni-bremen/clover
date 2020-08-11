@@ -76,6 +76,8 @@ public:
 	friend class Trace;
 };
 
+typedef std::map<std::string, int32_t> ConcreteStore;
+
 class Trace {
 private:
 	std::vector<std::shared_ptr<BitVector>> pathCons;
@@ -89,7 +91,7 @@ public:
 	Trace(Solver &_solver);
 
 	void add(std::shared_ptr<BitVector> bv);
-	bool getStore(void);
+	std::optional<ConcreteStore> getStore(void);
 };
 
 };
