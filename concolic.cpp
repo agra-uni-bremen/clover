@@ -9,7 +9,7 @@ ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete, std::shared_p
 }
 
 ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete)
-		: concrete(_concrete), symbolic(nullptr)
+		: concrete(_concrete), symbolic(std::nullopt)
 {
 	return;
 }
@@ -19,12 +19,10 @@ ConcolicValue::add(std::shared_ptr<ConcolicValue> other)
 {
 	auto bvv = concrete->add(other->concrete);
 
-	std::shared_ptr<BitVector> bvs_this = (this->hasSymbolic()) ?
-		this->symbolic : this->concrete;
-	std::shared_ptr<BitVector> bvs_other = (other->hasSymbolic()) ?
-		other->symbolic : other->concrete;
+	auto bvs_this = this->symbolic.value_or(this->concrete);
+	auto bvs_other = other->symbolic.value_or(other->concrete);
 
-	if (this->hasSymbolic() || other->hasSymbolic()) {
+	if (this->symbolic.has_value() || other->symbolic.has_value()) {
 		auto bvs = bvs_this->add(bvs_other);
 		return std::make_shared<ConcolicValue>(ConcolicValue(bvv, bvs));
 	} else {
@@ -37,20 +35,13 @@ ConcolicValue::slt(std::shared_ptr<ConcolicValue> other)
 {
 	auto bvv = concrete->slt(other->concrete);
 
-	std::shared_ptr<BitVector> bvs_this = (this->hasSymbolic()) ?
-		this->symbolic : this->concrete;
-	std::shared_ptr<BitVector> bvs_other = (other->hasSymbolic()) ?
-		other->symbolic : other->concrete;
+	auto bvs_this = this->symbolic.value_or(this->concrete);
+	auto bvs_other = other->symbolic.value_or(other->concrete);
 
-	if (this->hasSymbolic() || other->hasSymbolic()) {
+	if (this->symbolic.has_value() || other->symbolic.has_value()) {
 		auto bvs = bvs_this->slt(bvs_other);
 		return std::make_shared<ConcolicValue>(ConcolicValue(bvv, bvs));
 	} else {
 		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
 	}
-}
-
-bool
-ConcolicValue::hasSymbolic(void) {
-	return this->symbolic != nullptr;
 }

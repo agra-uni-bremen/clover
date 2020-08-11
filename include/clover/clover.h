@@ -41,14 +41,12 @@ public:
 class ConcolicValue {
 public:
 	std::shared_ptr<BitVector> concrete;
-	std::shared_ptr<BitVector> symbolic; /* TODO: make this std::optional */
+	std::optional<std::shared_ptr<BitVector>> symbolic;
 
 	/* TODO: Resolve duplication with BitVector class */
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
-
-	bool hasSymbolic(void);
 private:
 	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::shared_ptr<BitVector> _symbolic);
 	ConcolicValue(std::shared_ptr<BitVector> _concrete);
