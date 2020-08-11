@@ -82,13 +82,14 @@ private:
 	Solver &solver;
 
 	size_t getRandomPathCond(void);
-	klee::Query negateRandom(void);
+	std::optional<klee::Query> negateRandom(void);
+	std::optional<klee::Assignment> generateNewAssign(void);
 
 public:
 	Trace(Solver &_solver);
 
 	void add(std::shared_ptr<BitVector> bv);
-	std::optional<klee::Assignment> generateNewAssign(void);
+	bool getStore(void);
 };
 
 };
