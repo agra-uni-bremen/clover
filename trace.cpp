@@ -74,9 +74,6 @@ Trace::getStore(void)
 	if (!assign.has_value())
 		return {};
 
-	/* XXX: We only support register values for now */
-	int32_t store_value;
-
 	ConcreteStore store;
 	for (auto const& b : assign->bindings) {
 		auto array = b.first;
