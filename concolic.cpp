@@ -2,14 +2,8 @@
 
 using namespace clover;
 
-ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete, std::shared_ptr<BitVector> _symbolic)
+ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional<std::shared_ptr<BitVector>> _symbolic)
 		: concrete(_concrete), symbolic(_symbolic)
-{
-	return;
-}
-
-ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete)
-		: concrete(_concrete), symbolic(std::nullopt)
 {
 	return;
 }
