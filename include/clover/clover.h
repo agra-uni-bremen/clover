@@ -62,11 +62,23 @@ public:
 	int eval(const klee::Query &query);
 	int eval(std::shared_ptr<BitVector> bv);
 
-	/* TODO: Return an IntVal here */
-	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
-	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
-
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
+
+	template <typename T> T evalValue(const klee::Query &query) {
+		klee::ref<klee::ConstantExpr> r;
+
+		if (!solver->getValue(query, r))
+			throw std::runtime_error("getValue() failed for solver");
+
+		return (T)r->getZExtValue(sizeof(T) * 8);
+	}
+
+	template <typename T> T evalValue(std::shared_ptr<BitVector> bv) {
+		klee::ConstraintSet cs;
+
+		auto q = klee::Query(cs, bv->expr);
+		return this->evalValue<T>(q);
+	}
 };
 
 typedef std::map<std::string, IntValue> ConcreteStore;

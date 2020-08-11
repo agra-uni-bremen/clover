@@ -61,26 +61,6 @@ Solver::eval(std::shared_ptr<BitVector> bv)
 	return this->eval(q);
 }
 
-uint64_t
-Solver::evalValue(const klee::Query &query, unsigned bits)
-{
-	klee::ref<klee::ConstantExpr> r;
-
-	if (!solver->getValue(query, r))
-		throw std::runtime_error("getValue() failed for solver");
-
-	return r->getZExtValue(bits);
-}
-
-uint64_t
-Solver::evalValue(std::shared_ptr<BitVector> bv, unsigned bits)
-{
-	klee::ConstraintSet cs;
-
-	auto q = klee::Query(cs, bv->expr);
-	return this->evalValue(q, bits);
-}
-
 std::shared_ptr<ConcolicValue>
 Solver::BVC(std::optional<std::string> name, IntValue value)
 {
