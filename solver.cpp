@@ -58,28 +58,13 @@ Solver::evalValue(std::shared_ptr<BitVector> bv, unsigned bits)
 	return this->evalValue(bv->toQuery(cs), bits);
 }
 
-std::shared_ptr<BitVector>
-Solver::BVS(std::string name, uint64_t size)
-{
-	const klee::Array *array;
-
-	array = array_cache.CreateArray(name, size);
-	auto bv = BitVector(array);
-
-	return std::make_shared<BitVector>(bv);
-}
-
-std::shared_ptr<BitVector>
-Solver::BVV(int64_t value, uint64_t size)
-{
-	return std::make_shared<BitVector>(value, size);
-}
-
 std::shared_ptr<ConcolicValue>
 Solver::BVC(std::string name, uint64_t size, int64_t value)
 {
-	auto bvv = this->BVV(value, size);
-	auto bvs = this->BVS(name, size);
+	auto array = array_cache.CreateArray(name, size);
+
+	auto bvv = std::make_shared<BitVector>(value, size);
+	auto bvs = std::make_shared<BitVector>(array);
 
 	auto bvc = ConcolicValue(bvv, bvs);
 	return std::make_shared<ConcolicValue>(bvc);
@@ -95,7 +80,7 @@ Solver::BVC(std::string name, uint64_t size)
 std::shared_ptr<ConcolicValue>
 Solver::BVC(int64_t value, uint64_t size)
 {
-	auto bvv = this->BVV(value, size);
+	auto bvv = std::make_shared<BitVector>(value, size);
 	auto bvc = ConcolicValue(bvv);
 
 	return std::make_shared<ConcolicValue>(bvc);

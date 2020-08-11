@@ -72,11 +72,6 @@ public:
 	uint64_t evalValue(const klee::Query &query, unsigned bits = 64);
 	uint64_t evalValue(std::shared_ptr<BitVector> bv, unsigned bits = 64);
 
-	/* TODO: Unclutter this factory, maybe even remove BitVector in
-	 * favor of ConcolicValue, i.e. only focus on cocolic execution? */
-	std::shared_ptr<BitVector> BVS(std::string name, uint64_t size);
-	std::shared_ptr<BitVector> BVV(int64_t value, uint64_t size);
-
 	/* TODO: Somehow cleanup these three constructors. */
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size, int64_t value);
 	std::shared_ptr<ConcolicValue> BVC(std::string name, uint64_t size);
