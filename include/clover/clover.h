@@ -19,21 +19,19 @@ typedef std::variant<uint8_t, uint32_t> IntValue;
 
 class BitVector {
 private:
-	BitVector(const klee::ref<klee::Expr> &expr);
 	klee::ref<klee::Expr> expr;
 
-public:
+	BitVector(const klee::ref<klee::Expr> &expr);
 	BitVector(IntValue value);
 	BitVector(const klee::Array *array);
 
-	klee::Query toQuery(klee::ConstraintSet &cs);
-
+public:
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> neg(void);
 
-	/* TODO: remove this */
+	friend class Solver;
 	friend class Trace;
 };
 
@@ -50,6 +48,7 @@ public:
 private:
 	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional<std::shared_ptr<BitVector>> _symbolic = std::nullopt);
 
+	/* The solver acts as a factory for ConcolicValue */
 	friend class Solver;
 };
 

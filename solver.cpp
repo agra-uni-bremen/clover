@@ -40,7 +40,9 @@ int
 Solver::eval(std::shared_ptr<BitVector> bv)
 {
 	klee::ConstraintSet cs;
-	return this->eval(bv->toQuery(cs));
+
+	auto q = klee::Query(cs, bv->expr);
+	return this->eval(q);
 }
 
 uint64_t
@@ -58,20 +60,22 @@ uint64_t
 Solver::evalValue(std::shared_ptr<BitVector> bv, unsigned bits)
 {
 	klee::ConstraintSet cs;
-	return this->evalValue(bv->toQuery(cs), bits);
+
+	auto q = klee::Query(cs, bv->expr);
+	return this->evalValue(q, bits);
 }
 
 std::shared_ptr<ConcolicValue>
 Solver::BVC(std::optional<std::string> name, IntValue value)
 {
-	auto concrete = std::make_shared<BitVector>(value);
+	auto concrete = std::make_shared<BitVector>(BitVector(value));
 	if (!name.has_value()) {
 		auto concolic = ConcolicValue(concrete);
 		return std::make_shared<ConcolicValue>(concolic);
 	}
 
 	auto array = array_cache.CreateArray(*name, intByteSize(value));
-	auto symbolic = std::make_shared<BitVector>(array);
+	auto symbolic = std::make_shared<BitVector>(BitVector(array));
 
 	auto concolic = ConcolicValue(concrete, symbolic);
 	return std::make_shared<ConcolicValue>(concolic);
