@@ -81,23 +81,42 @@ public:
 	}
 };
 
+class Branch {
+private:
+	unsigned id;
+	std::shared_ptr<BitVector> bv;
+
+	std::optional<std::shared_ptr<Branch>> true_branch;
+	std::optional<std::shared_ptr<Branch>> false_branch;
+
+	Branch(unsigned id, std::shared_ptr<BitVector> bv);
+
+	bool getPath(unsigned id, std::vector<std::shared_ptr<BitVector>> &path);
+	std::optional<std::shared_ptr<Branch>> getBranch(unsigned id);
+
+	friend class Trace;
+};
+
 typedef std::map<std::string, IntValue> ConcreteStore;
 
 class Trace {
 private:
-	typedef std::pair<unsigned, std::shared_ptr<BitVector>> PathCondition;
-
-	std::map<unsigned, bool> negatedCons;
-	std::vector<PathCondition> pathCons;
+	std::map<unsigned, bool> negatedConds;
 	Solver &solver;
 
-	ssize_t getRandomIndex(void);
-	klee::Query getQuery(klee::ConstraintSet &cs, size_t upto);
+	std::shared_ptr<Branch> pathCondsRoot;
+	std::shared_ptr<Branch> pathCondsCurrent;
+
+	/* Whether the previsouly added branch was true or false */
+	bool prevCond;
+
+	std::optional<unsigned> getUnnegatedId(void);
+	klee::Query getQuery(klee::ConstraintSet &cs, unsigned lastid);
 
 public:
 	Trace(Solver &_solver);
 
-	void add(unsigned id, std::shared_ptr<BitVector> bv);
+	void add(bool condition, unsigned id, std::shared_ptr<BitVector> bv);
 
 	std::optional<klee::Assignment> negateRandom(klee::ConstraintSet &cs);
 	ConcreteStore getStore(const klee::Assignment &assign);

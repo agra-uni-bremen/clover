@@ -13,82 +13,89 @@ using namespace clover;
 Trace::Trace(Solver &_solver)
 		: solver(_solver)
 {
-	return;
+	prevCond = false;
 }
 
 void
-Trace::add(unsigned id, std::shared_ptr<BitVector> bv)
+Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 {
-	/* XXX: This is just a temporary proof of concept, the
-	 * underlying path constraint datastructure needs to be
-	 * converted to a Tree anyhow. */
-	for (auto pair : pathCons) {
-		auto id = pair.first;
-		if (id == id)
-			return;
+
+	/* TODO: handle case where we have discovered a new false/true branch */
+
+	Branch &branch = pathCondsRoot;
+	if (!branch.bv.has_value()) {
+		branch.id = id;
+		branch.bv = bv;
+		goto ret;
 	}
 
-	pathCons.push_back(std::make_pair(id, bv));
-	return;
+	branch = Branch(id, bv);
+	if (prevCond) {
+		assert(!pathCondsCurrent.true_branch.has_value());
+		pathCondsCurrent.true_branch = branch;
+	else {
+		assert(!pathCondsCurrent.false_branch.has_value());
+		pathCondsCurrent.false_branch = branch;
+	}
+
+ret:
+	if (negatedConds.count(id))
+		throw std::invalid_argument("id is not unique");
+
+	negatedConds[id] = false;
+	prevCond = condition;
+	pathCondsCurrent = branch;
 }
 
 klee::Query
-Trace::getQuery(klee::ConstraintSet &cs, size_t upto)
+Trace::getQuery(klee::ConstraintSet &cs, unsigned lastid)
 {
-	if (upto >= pathCons.size())
-		throw std::out_of_range("upto exceeds amount of path constraints");
+	std::vector<std::shared_ptr<BitVector>> path;
+
+	if (!pathCondsRoot.getPath(lastid, path))
+		throw std::invalid_argument("invalid id");
 
 	auto cm = klee::ConstraintManager(cs);
 	size_t i;
-	for (i = 0; i < upto; i++) {
-		auto bv = std::get<1>(pathCons.at(i));
-		cm.addConstraint(bv->expr);
-	}
+	for (i = 0; i < path.size() - 1; i++)
+		cm.addConstraint(path.at(i)->expr);
 
-	auto bv = std::get<1>(pathCons.at(i));
+	auto bv = path.at(i);
 	auto expr = cm.simplifyExpr(cs, bv->expr);
 
 	// XXX: Can we extract the constraints from cm instead?
 	return klee::Query(cs, expr);
 }
 
-ssize_t
-Trace::getRandomIndex(void)
+std::optional<unsigned>
+Trace::getUnnegatedId(void)
 {
-	/* modulo zero is undefined */
-	assert(pathCons.size() > 0);
+	std::vector<unsigned> unnegated_ids;
 
-	int random = rand();
-	size_t rindex = (unsigned)random % pathCons.size();
+	for (auto elem : negatedConds) {
+		auto id = elem.first;
+		auto negated = elem.second;
 
-	if (!negatedCons.count(rindex)) {
-		negatedCons[rindex] = true;
-		return rindex;
+		if (!negated)
+			unnegated_ids.push_back(id);
 	}
 
-	/* Iterate through all path condition starting at ++rindex */
-	size_t i = (rindex + 1) % pathCons.size();
-	for (; i != rindex; i = (i + 1) % pathCons.size())
-		if (!negatedCons.count(i))
-			break;
+	if (unnegated_ids.empty())
+		return std::nullopt; /* All conditions have been negated */
 
-	if (i == rindex)
-		return -1; /* All conditions have been negated */
+	int random = rand();
+	size_t rindex = (unsigned)random % unnegated_ids.size();
 
-	negatedCons[i] = true;
-	return i;
+	return unnegated_ids.at(rindex);
 }
 
 std::optional<klee::Assignment>
 Trace::negateRandom(klee::ConstraintSet &cs)
 {
-	if (pathCons.empty())
+	auto id = getUnnegatedId();
+	if (!id.has_value())
 		return std::nullopt;
-
-	ssize_t rindex = getRandomIndex();
-	if (rindex == -1)
-		return std::nullopt;
-	auto query = getQuery(cs, rindex);
+	auto query = getQuery(cs, id);
 
 	auto assign = solver.getAssignment(query.negateExpr());
 	if (!assign.has_value())
