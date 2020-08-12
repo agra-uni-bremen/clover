@@ -17,9 +17,9 @@ Trace::Trace(Solver &_solver)
 }
 
 void
-Trace::add(std::shared_ptr<BitVector> bv)
+Trace::add(unsigned id, std::shared_ptr<BitVector> bv)
 {
-	pathCons.push_back(bv);
+	pathCons.push_back(std::make_pair(id, bv));
 	return;
 }
 
@@ -31,10 +31,12 @@ Trace::getQuery(klee::ConstraintSet &cs, size_t upto)
 
 	auto cm = klee::ConstraintManager(cs);
 	size_t i;
-	for (i = 0; i < upto; i++)
-		cm.addConstraint(pathCons.at(i)->expr);
+	for (i = 0; i < upto; i++) {
+		auto bv = std::get<1>(pathCons.at(i));
+		cm.addConstraint(bv->expr);
+	}
 
-	auto bv = pathCons.at(i);
+	auto bv = std::get<1>(pathCons.at(i));
 	auto expr = cm.simplifyExpr(cs, bv->expr);
 
 	// XXX: Can we extract the constraints from cm instead?

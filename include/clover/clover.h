@@ -85,7 +85,9 @@ typedef std::map<std::string, IntValue> ConcreteStore;
 
 class Trace {
 private:
-	std::vector<std::shared_ptr<BitVector>> pathCons;
+	typedef std::pair<unsigned, std::shared_ptr<BitVector>> PathCondition;
+
+	std::vector<PathCondition> pathCons;
 	Solver &solver;
 
 	klee::Query getQuery(klee::ConstraintSet &cs, size_t upto);
@@ -93,7 +95,7 @@ private:
 public:
 	Trace(Solver &_solver);
 
-	void add(std::shared_ptr<BitVector> bv);
+	void add(unsigned id, std::shared_ptr<BitVector> bv);
 
 	std::optional<klee::Assignment> negateRandom(klee::ConstraintSet &cs);
 	ConcreteStore getStore(const klee::Assignment &assign);
