@@ -19,9 +19,6 @@ Trace::Trace(Solver &_solver)
 void
 Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 {
-
-	/* TODO: handle case where we have discovered a new false/true branch */
-
 	Branch &branch = pathCondsRoot;
 	if (!branch.bv.has_value()) {
 		branch.id = id;
@@ -31,18 +28,18 @@ Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 
 	branch = Branch(id, bv);
 	if (prevCond) {
-		assert(!pathCondsCurrent.true_branch.has_value());
+		if (pathCondsCurrent.true_branch.has_value)
+			goto ret; /* no new path found */
 		pathCondsCurrent.true_branch = branch;
 	else {
-		assert(!pathCondsCurrent.false_branch.has_value());
+		if (pathCondsCurrent.false_branch.has_value)
+			goto ret; /* no new path found */
 		pathCondsCurrent.false_branch = branch;
 	}
 
 ret:
 	if (negatedConds.count(id))
-		throw std::invalid_argument("id is not unique");
-
-	negatedConds[id] = false;
+		negatedConds[id] = false;
 	prevCond = condition;
 	pathCondsCurrent = branch;
 }
