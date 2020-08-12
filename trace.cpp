@@ -43,14 +43,42 @@ Trace::getQuery(klee::ConstraintSet &cs, size_t upto)
 	return klee::Query(cs, expr);
 }
 
+ssize_t
+Trace::getRandomIndex(void)
+{
+	/* modulo zero is undefined */
+	assert(pathCons.size() > 0);
+
+	int random = rand();
+	size_t rindex = (unsigned)random % pathCons.size();
+
+	if (!negatedCons.count(rindex)) {
+		negatedCons[rindex] = true;
+		return rindex;
+	}
+
+	/* Iterate through all path condition starting at ++rindex */
+	size_t i = (rindex + 1) % pathCons.size();
+	for (; i != rindex; i = (i + 1) % pathCons.size())
+		if (!negatedCons.count(i))
+			break;
+
+	if (i == rindex)
+		return -1; /* All conditions have been negated */
+
+	negatedCons[i] = true;
+	return i;
+}
+
 std::optional<klee::Assignment>
 Trace::negateRandom(klee::ConstraintSet &cs)
 {
 	if (pathCons.empty())
-		return std::nullopt; /* modulo zero is undefined */
+		return std::nullopt;
 
-	int random = rand();
-	size_t rindex = (unsigned)random % pathCons.size();
+	ssize_t rindex = getRandomIndex();
+	if (rindex == -1)
+		return std::nullopt;
 	auto query = getQuery(cs, rindex);
 
 	auto assign = solver.getAssignment(query.negateExpr());

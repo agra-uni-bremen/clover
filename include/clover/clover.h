@@ -87,9 +87,11 @@ class Trace {
 private:
 	typedef std::pair<unsigned, std::shared_ptr<BitVector>> PathCondition;
 
+	std::map<unsigned, bool> negatedCons;
 	std::vector<PathCondition> pathCons;
 	Solver &solver;
 
+	ssize_t getRandomIndex(void);
 	klee::Query getQuery(klee::ConstraintSet &cs, size_t upto);
 
 public:
