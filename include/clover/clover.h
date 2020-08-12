@@ -105,14 +105,14 @@ private:
 	std::shared_ptr<Branch> pathCondsRoot;
 	std::shared_ptr<Branch> pathCondsCurrent;
 
-	/* Whether the previsouly added branch was true or false */
-	bool prevCond;
+	bool prevCond; /* Whether the previsouly added branch was true or false */
 
 	std::optional<unsigned> getUnnegatedId(void);
 	klee::Query getQuery(klee::ConstraintSet &cs, unsigned lastid);
 
 public:
 	Trace(Solver &_solver);
+	void reset(void);
 
 	void add(bool condition, unsigned id, std::shared_ptr<BitVector> bv);
 

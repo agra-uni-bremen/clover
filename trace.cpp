@@ -13,8 +13,13 @@ using namespace clover;
 Trace::Trace(Solver &_solver)
 		: solver(_solver)
 {
-	prevCond = false;
 	pathCondsRoot = nullptr;
+	pathCondsCurrent = nullptr;
+}
+
+void
+Trace::reset(void)
+{
 	pathCondsCurrent = nullptr;
 }
 
@@ -22,10 +27,11 @@ void
 Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 {
 	auto branch = std::make_shared<Branch>(Branch(id, bv));
-	if (pathCondsRoot == nullptr) { /* first branch condition */
-		assert(pathCondsCurrent == nullptr);
+	if (pathCondsRoot == nullptr) { /* first added branch condition */
 		pathCondsRoot = branch;
-
+		goto ret;
+	} else if (pathCondsCurrent == nullptr) { /* reexploring after reset() */
+		assert(id == pathCondsRoot->id);
 		goto ret;
 	}
 
