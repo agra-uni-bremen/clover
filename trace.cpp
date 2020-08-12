@@ -14,6 +14,8 @@ Trace::Trace(Solver &_solver)
 		: solver(_solver)
 {
 	prevCond = false;
+	pathCondsRoot = nullptr;
+	pathCondsCurrent = nullptr;
 }
 
 void
