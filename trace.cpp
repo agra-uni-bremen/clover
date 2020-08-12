@@ -19,22 +19,22 @@ Trace::Trace(Solver &_solver)
 void
 Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 {
-	Branch &branch = pathCondsRoot;
-	if (!branch.bv.has_value()) {
-		branch.id = id;
-		branch.bv = bv;
+	auto branch = pathCondsRoot;
+	if (branch->bv == nullptr) { /* if is root node */
+		branch->id = id;
+		branch->bv = bv;
 		goto ret;
 	}
 
-	branch = Branch(id, bv);
+	branch = std::make_shared<Branch>(Branch(id, bv));
 	if (prevCond) {
-		if (pathCondsCurrent.true_branch.has_value)
+		if (pathCondsCurrent->true_branch.has_value())
 			goto ret; /* no new path found */
-		pathCondsCurrent.true_branch = branch;
-	else {
-		if (pathCondsCurrent.false_branch.has_value)
+		pathCondsCurrent->true_branch = branch;
+	} else {
+		if (pathCondsCurrent->false_branch.has_value())
 			goto ret; /* no new path found */
-		pathCondsCurrent.false_branch = branch;
+		pathCondsCurrent->false_branch = branch;
 	}
 
 ret:
@@ -49,7 +49,7 @@ Trace::getQuery(klee::ConstraintSet &cs, unsigned lastid)
 {
 	std::vector<std::shared_ptr<BitVector>> path;
 
-	if (!pathCondsRoot.getPath(lastid, path))
+	if (!pathCondsRoot->getPath(lastid, path))
 		throw std::invalid_argument("invalid id");
 
 	auto cm = klee::ConstraintManager(cs);
@@ -92,7 +92,7 @@ Trace::negateRandom(klee::ConstraintSet &cs)
 	auto id = getUnnegatedId();
 	if (!id.has_value())
 		return std::nullopt;
-	auto query = getQuery(cs, id);
+	auto query = getQuery(cs, *id);
 
 	auto assign = solver.getAssignment(query.negateExpr());
 	if (!assign.has_value())
