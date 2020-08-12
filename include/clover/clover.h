@@ -86,8 +86,8 @@ private:
 	unsigned id;
 	std::shared_ptr<BitVector> bv;
 
-	std::optional<std::shared_ptr<Branch>> true_branch;
-	std::optional<std::shared_ptr<Branch>> false_branch;
+	std::shared_ptr<Branch> true_branch;
+	std::shared_ptr<Branch> false_branch;
 
 	Branch(unsigned id, std::shared_ptr<BitVector> bv);
 	bool getPath(unsigned id, std::vector<std::shared_ptr<BitVector>> &path);

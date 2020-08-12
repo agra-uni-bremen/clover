@@ -36,11 +36,11 @@ Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 	}
 
 	if (prevCond) {
-		if (pathCondsCurrent->true_branch.has_value())
+		if (pathCondsCurrent->true_branch)
 			goto ret; /* no new path found */
 		pathCondsCurrent->true_branch = branch;
 	} else {
-		if (pathCondsCurrent->false_branch.has_value())
+		if (pathCondsCurrent->false_branch)
 			goto ret; /* no new path found */
 		pathCondsCurrent->false_branch = branch;
 	}
