@@ -19,14 +19,14 @@ Trace::Trace(Solver &_solver)
 void
 Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 {
-	auto branch = pathCondsRoot;
-	if (branch->bv == nullptr) { /* if is root node */
-		branch->id = id;
-		branch->bv = bv;
+	auto branch = std::make_shared<Branch>(Branch(id, bv));
+	if (pathCondsRoot == nullptr) { /* first branch condition */
+		assert(pathCondsCurrent == nullptr);
+		pathCondsRoot = branch;
+
 		goto ret;
 	}
 
-	branch = std::make_shared<Branch>(Branch(id, bv));
 	if (prevCond) {
 		if (pathCondsCurrent->true_branch.has_value())
 			goto ret; /* no new path found */
