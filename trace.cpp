@@ -51,7 +51,7 @@ Trace::negateRandom(klee::ConstraintSet &cs)
 	size_t rindex = (unsigned)random % pathCons.size();
 	auto query = getQuery(cs, rindex);
 
-	auto assign = solver.getAssignment(query);
+	auto assign = solver.getAssignment(query.negateExpr());
 	if (!assign.has_value())
 		return std::nullopt; /* unsat */
 
