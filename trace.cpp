@@ -19,6 +19,15 @@ Trace::Trace(Solver &_solver)
 void
 Trace::add(unsigned id, std::shared_ptr<BitVector> bv)
 {
+	/* XXX: This is just a temporary proof of concept, the
+	 * underlying path constraint datastructure needs to be
+	 * converted to a Tree anyhow. */
+	for (auto pair : pathCons) {
+		auto id = pair.first;
+		if (id == id)
+			return;
+	}
+
 	pathCons.push_back(std::make_pair(id, bv));
 	return;
 }
