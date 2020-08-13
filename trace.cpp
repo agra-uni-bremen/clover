@@ -31,17 +31,21 @@ Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 		pathCondsRoot = branch;
 		goto ret;
 	} else if (pathCondsCurrent == nullptr) { /* reexploring after reset() */
-		assert(id == pathCondsRoot->id);
+		branch = pathCondsRoot;
 		goto ret;
 	}
 
 	if (prevCond) {
-		if (pathCondsCurrent->true_branch)
+		if (pathCondsCurrent->true_branch) {
+			branch = pathCondsCurrent->true_branch;
 			goto ret; /* no new path found */
+		}
 		pathCondsCurrent->true_branch = branch;
 	} else {
-		if (pathCondsCurrent->false_branch)
+		if (pathCondsCurrent->false_branch) {
+			branch = pathCondsCurrent->false_branch;
 			goto ret; /* no new path found */
+		}
 		pathCondsCurrent->false_branch = branch;
 	}
 
