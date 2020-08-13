@@ -81,8 +81,11 @@ public:
 	}
 };
 
+
 class Branch {
 private:
+	typedef std::vector<std::shared_ptr<BitVector>> Path;
+
 	unsigned id;
 	std::shared_ptr<BitVector> bv;
 
@@ -90,7 +93,7 @@ private:
 	std::shared_ptr<Branch> false_branch;
 
 	Branch(unsigned _id, std::shared_ptr<BitVector> _bv);
-	bool getPath(unsigned id, std::vector<std::shared_ptr<BitVector>> &path);
+	bool getPath(unsigned id, Path &path);
 
 	friend class Trace;
 };

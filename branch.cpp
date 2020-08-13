@@ -14,7 +14,7 @@ Branch::Branch(unsigned _id, std::shared_ptr<BitVector> _bv)
 }
 
 bool
-Branch::getPath(unsigned id, std::vector<std::shared_ptr<BitVector>> &path)
+Branch::getPath(unsigned id, Path &path)
 {
 	assert(this->bv != nullptr);
 	path.push_back(this->bv);
