@@ -95,7 +95,9 @@ Trace::getUnnegatedId(void)
 	int random = rand();
 	size_t rindex = (unsigned)random % unnegated_ids.size();
 
-	return unnegated_ids.at(rindex);
+	auto id = unnegated_ids.at(rindex);
+	negatedConds.at(id) = true;
+	return id;
 }
 
 std::optional<klee::Assignment>
