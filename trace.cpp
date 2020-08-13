@@ -24,9 +24,9 @@ Trace::reset(void)
 }
 
 void
-Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
+Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 {
-	auto branch = std::make_shared<Branch>(Branch(id, bv));
+	auto branch = std::make_shared<Branch>(Branch(false, bv));
 	if (pathCondsRoot == nullptr) { /* first added branch condition */
 		pathCondsRoot = branch;
 		goto ret;
@@ -50,21 +50,15 @@ Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 	}
 
 ret:
-	if (!negatedConds.count(id))
-		negatedConds[id] = false;
 	prevCond = condition;
 	pathCondsCurrent = branch;
 }
 
 klee::Query
-Trace::getQuery(klee::ConstraintSet &cs, unsigned lastid)
+Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 {
-	std::vector<std::shared_ptr<BitVector>> path;
-
-	if (!pathCondsRoot->getPath(lastid, path))
-		throw std::invalid_argument("invalid id");
-
 	auto cm = klee::ConstraintManager(cs);
+
 	size_t i;
 	for (i = 0; i < path.size() - 1; i++)
 		cm.addConstraint(path.at(i)->expr);
@@ -76,37 +70,14 @@ Trace::getQuery(klee::ConstraintSet &cs, unsigned lastid)
 	return klee::Query(cs, expr);
 }
 
-std::optional<unsigned>
-Trace::getUnnegatedId(void)
-{
-	std::vector<unsigned> unnegated_ids;
-
-	for (auto elem : negatedConds) {
-		auto id = elem.first;
-		auto negated = elem.second;
-
-		if (!negated)
-			unnegated_ids.push_back(id);
-	}
-
-	if (unnegated_ids.empty())
-		return std::nullopt; /* All conditions have been negated */
-
-	int random = rand();
-	size_t rindex = (unsigned)random % unnegated_ids.size();
-
-	auto id = unnegated_ids.at(rindex);
-	negatedConds.at(id) = true;
-	return id;
-}
-
 std::optional<klee::Assignment>
 Trace::negateRandom(klee::ConstraintSet &cs)
 {
-	auto id = getUnnegatedId();
-	if (!id.has_value())
+	Branch::Path path;
+
+	if (!pathCondsRoot->getRandomPath(path))
 		return std::nullopt;
-	auto query = getQuery(cs, *id);
+	auto query = getQuery(cs, path);
 
 	auto assign = solver.getAssignment(query.negateExpr());
 	if (!assign.has_value())

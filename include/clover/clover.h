@@ -90,32 +90,34 @@ private:
 	public:
 		typedef std::vector<std::shared_ptr<BitVector>> Path;
 
-		unsigned id;
+		bool negated;
 		std::shared_ptr<BitVector> bv;
 
 		std::shared_ptr<Branch> true_branch;
 		std::shared_ptr<Branch> false_branch;
 
-		Branch(unsigned _id, std::shared_ptr<BitVector> _bv);
-		bool getPath(unsigned id, Path &path);
+		Branch(bool _negated, std::shared_ptr<BitVector> _bv);
+
+		/* Get seemingly random path to an unnegated node in the tree.
+		 * The node is also marked as negated before a path is returned. */
+		bool getRandomPath(Path &path);
 	};
 
-	std::map<unsigned, bool> negatedConds;
 	Solver &solver;
 
 	std::shared_ptr<Branch> pathCondsRoot;
 	std::shared_ptr<Branch> pathCondsCurrent;
 
-	bool prevCond; /* Whether the previsouly added branch was true or false */
+	/* Whether the previsouly added branch was true or false */
+	bool prevCond;
 
-	std::optional<unsigned> getUnnegatedId(void);
-	klee::Query getQuery(klee::ConstraintSet &cs, unsigned lastid);
+	klee::Query getQuery(klee::ConstraintSet &cs, Branch::Path &path);
 
 public:
 	Trace(Solver &_solver);
 	void reset(void);
 
-	void add(bool condition, unsigned id, std::shared_ptr<BitVector> bv);
+	void add(bool condition, std::shared_ptr<BitVector> bv);
 
 	std::optional<klee::Assignment> negateRandom(klee::ConstraintSet &cs);
 	ConcreteStore getStore(const klee::Assignment &assign);
