@@ -89,7 +89,7 @@ private:
 	std::shared_ptr<Branch> true_branch;
 	std::shared_ptr<Branch> false_branch;
 
-	Branch(unsigned id, std::shared_ptr<BitVector> bv);
+	Branch(unsigned _id, std::shared_ptr<BitVector> _bv);
 	bool getPath(unsigned id, std::vector<std::shared_ptr<BitVector>> &path);
 
 	friend class Trace;

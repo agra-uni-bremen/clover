@@ -4,8 +4,11 @@
 
 using namespace clover;
 
-Branch::Branch(unsigned id, std::shared_ptr<BitVector> bv)
+Branch::Branch(unsigned _id, std::shared_ptr<BitVector> _bv)
 {
+	id = _id;
+	bv = _bv;
+
 	true_branch == nullptr;
 	false_branch == nullptr;
 }
