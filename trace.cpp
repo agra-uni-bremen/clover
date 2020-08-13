@@ -50,7 +50,7 @@ Trace::add(bool condition, unsigned id, std::shared_ptr<BitVector> bv)
 	}
 
 ret:
-	if (negatedConds.count(id))
+	if (!negatedConds.count(id))
 		negatedConds[id] = false;
 	prevCond = condition;
 	pathCondsCurrent = branch;
