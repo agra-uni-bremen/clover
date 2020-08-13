@@ -4,7 +4,7 @@
 
 using namespace clover;
 
-Branch::Branch(unsigned _id, std::shared_ptr<BitVector> _bv)
+Trace::Branch::Branch(unsigned _id, std::shared_ptr<BitVector> _bv)
 {
 	id = _id;
 	bv = _bv;
@@ -14,7 +14,7 @@ Branch::Branch(unsigned _id, std::shared_ptr<BitVector> _bv)
 }
 
 bool
-Branch::getPath(unsigned id, Path &path)
+Trace::Branch::getPath(unsigned id, Path &path)
 {
 	assert(this->bv != nullptr);
 	path.push_back(this->bv);

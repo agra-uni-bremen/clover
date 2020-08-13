@@ -82,26 +82,24 @@ public:
 };
 
 
-class Branch {
-private:
-	typedef std::vector<std::shared_ptr<BitVector>> Path;
-
-	unsigned id;
-	std::shared_ptr<BitVector> bv;
-
-	std::shared_ptr<Branch> true_branch;
-	std::shared_ptr<Branch> false_branch;
-
-	Branch(unsigned _id, std::shared_ptr<BitVector> _bv);
-	bool getPath(unsigned id, Path &path);
-
-	friend class Trace;
-};
-
 typedef std::map<std::string, IntValue> ConcreteStore;
 
 class Trace {
 private:
+	class Branch {
+	public:
+		typedef std::vector<std::shared_ptr<BitVector>> Path;
+
+		unsigned id;
+		std::shared_ptr<BitVector> bv;
+
+		std::shared_ptr<Branch> true_branch;
+		std::shared_ptr<Branch> false_branch;
+
+		Branch(unsigned _id, std::shared_ptr<BitVector> _bv);
+		bool getPath(unsigned id, Path &path);
+	};
+
 	std::map<unsigned, bool> negatedConds;
 	Solver &solver;
 
