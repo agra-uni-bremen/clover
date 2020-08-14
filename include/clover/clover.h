@@ -81,6 +81,16 @@ public:
 	}
 };
 
+class ConcolicMemory {
+private:
+	std::unordered_map<size_t, std::shared_ptr<ConcolicValue>> data;
+
+public:
+	ConcolicMemory(void);
+
+	std::shared_ptr<ConcolicValue> load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);
+	void store(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);
+};
 
 typedef std::map<std::string, IntValue> ConcreteStore;
 
