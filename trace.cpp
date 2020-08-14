@@ -26,7 +26,14 @@ Trace::reset(void)
 void
 Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 {
-	auto branch = std::make_shared<Branch>(Branch(false, bv));
+	/* We negate the branch condition later to find new paths.
+	 *
+	 *   Initially true: Find a path so that the condition is false.
+	 *   Initially false: Find a path so that the condition is true.
+	 */
+	auto bv_cond = (condition) ?  bv->neg() : bv;
+
+	auto branch = std::make_shared<Branch>(Branch(false, bv_cond));
 	if (pathCondsRoot == nullptr) { /* first added branch condition */
 		pathCondsRoot = branch;
 		goto ret;
