@@ -57,7 +57,14 @@ ConcolicValue::concat(std::shared_ptr<ConcolicValue> other)
 }
 
 std::shared_ptr<ConcolicValue>
-extract(unsigned offset, klee::Expr::Width width)
+ConcolicValue::extract(unsigned offset, klee::Expr::Width width)
 {
-	throw "not implemented";
+	auto bvv = concrete->extract(offset, width);
+
+	if (this->symbolic.has_value()) {
+		auto bvs = (*symbolic)->extract(offset, width);
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv, bvs));
+	} else {
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
+	}
 }
