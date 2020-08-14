@@ -9,6 +9,12 @@ ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional
 }
 
 std::shared_ptr<ConcolicValue>
+read(klee::UpdateList &ul, unsigned index)
+{
+	throw "not implemented";
+}
+
+std::shared_ptr<ConcolicValue>
 ConcolicValue::add(std::shared_ptr<ConcolicValue> other)
 {
 	auto bvv = concrete->add(other->concrete);
@@ -43,7 +49,7 @@ ConcolicValue::slt(std::shared_ptr<ConcolicValue> other)
 std::shared_ptr<ConcolicValue>
 ConcolicValue::concat(std::shared_ptr<ConcolicValue> other)
 {
-	auto bvv = concrete->slt(other->concrete);
+	auto bvv = concrete->concat(other->concrete);
 
 	if (this->symbolic.has_value() || other->symbolic.has_value()) {
 		auto bvs_this = this->symbolic.value_or(this->concrete);

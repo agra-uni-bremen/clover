@@ -41,6 +41,16 @@ BitVector::BitVector(const klee::Array *array)
 }
 
 std::shared_ptr<BitVector>
+BitVector::read(klee::UpdateList &ul, unsigned index)
+{
+	auto exb = klee::createDefaultExprBuilder();
+	auto expr = exb->Read(ul, klee::ConstantExpr::create(index, klee::Expr::Int32));
+
+	auto bv = BitVector(expr);
+	return std::make_shared<BitVector>(bv);
+}
+
+std::shared_ptr<BitVector>
 BitVector::add(std::shared_ptr<BitVector> other) {
 	auto exb = klee::createDefaultExprBuilder();
 	auto expr = exb->Add(this->expr, other->expr);

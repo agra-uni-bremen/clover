@@ -26,6 +26,8 @@ private:
 	BitVector(const klee::Array *array);
 
 public:
+	std::shared_ptr<BitVector> read(klee::UpdateList &ul, unsigned index);
+
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
@@ -40,6 +42,8 @@ class ConcolicValue {
 public:
 	std::shared_ptr<BitVector> concrete;
 	std::optional<std::shared_ptr<BitVector>> symbolic;
+
+	std::shared_ptr<ConcolicValue> read(klee::UpdateList &ul, unsigned index);
 
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
@@ -94,7 +98,7 @@ public:
 	ConcolicMemory(Solver &_solver);
 
 	std::shared_ptr<ConcolicValue> load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);
-	void store(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);
+	void store(std::shared_ptr<ConcolicValue> addr, std::shared_ptr<ConcolicValue> value, unsigned bytesize);
 };
 
 typedef std::map<std::string, IntValue> ConcreteStore;
