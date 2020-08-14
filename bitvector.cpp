@@ -59,6 +59,16 @@ BitVector::slt(std::shared_ptr<BitVector> other) {
 }
 
 std::shared_ptr<BitVector>
+BitVector::concat(std::shared_ptr<BitVector> other)
+{
+	auto exb = klee::createDefaultExprBuilder();
+	auto expr = exb->Concat(this->expr, other->expr);
+
+	auto bv = BitVector(expr);
+	return std::make_shared<BitVector>(bv);
+}
+
+std::shared_ptr<BitVector>
 BitVector::neg(void)
 {
 	auto exb = klee::createDefaultExprBuilder();
