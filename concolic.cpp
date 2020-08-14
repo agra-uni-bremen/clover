@@ -9,12 +9,6 @@ ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional
 }
 
 std::shared_ptr<ConcolicValue>
-read(klee::UpdateList &ul, unsigned index)
-{
-	throw "not implemented";
-}
-
-std::shared_ptr<ConcolicValue>
 ConcolicValue::add(std::shared_ptr<ConcolicValue> other)
 {
 	auto bvv = concrete->add(other->concrete);
@@ -60,4 +54,10 @@ ConcolicValue::concat(std::shared_ptr<ConcolicValue> other)
 	} else {
 		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
 	}
+}
+
+std::shared_ptr<ConcolicValue>
+extract(unsigned offset, klee::Expr::Width width)
+{
+	throw "not implemented";
 }

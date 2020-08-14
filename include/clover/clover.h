@@ -26,12 +26,11 @@ private:
 	BitVector(const klee::Array *array);
 
 public:
-	std::shared_ptr<BitVector> read(klee::UpdateList &ul, unsigned index);
-
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> concat(std::shared_ptr<BitVector> other);
+	std::shared_ptr<BitVector> extract(unsigned offset, klee::Expr::Width width);
 	std::shared_ptr<BitVector> neg(void);
 
 	friend class Solver;
@@ -43,12 +42,12 @@ public:
 	std::shared_ptr<BitVector> concrete;
 	std::optional<std::shared_ptr<BitVector>> symbolic;
 
-	std::shared_ptr<ConcolicValue> read(klee::UpdateList &ul, unsigned index);
-
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> concat(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> extract(unsigned offset, klee::Expr::Width width);
+
 private:
 	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional<std::shared_ptr<BitVector>> _symbolic = std::nullopt);
 
