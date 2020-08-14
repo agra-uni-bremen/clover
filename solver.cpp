@@ -22,13 +22,17 @@ Solver::Solver(klee::Solver *_solver)
 std::optional<klee::Assignment>
 Solver::getAssignment(const klee::Query &query)
 {
+	/* KLEE is concerned with validity of queries. To find a
+	 * statisfiable assignment for a query it needs to be negated. */
+	auto nq = query.negateExpr();
+
 	std::vector<const klee::Array *> objects;
-	klee::findSymbolicObjects(query.expr, objects);
-	for (auto e : query.constraints)
+	klee::findSymbolicObjects(nq.expr, objects);
+	for (auto e : nq.constraints)
 		klee::findSymbolicObjects(e, objects);
 
 	std::vector<std::vector<unsigned char>> values;
-	if (!solver->getInitialValues(query, objects, values))
+	if (!solver->getInitialValues(nq, objects, values))
 		return std::nullopt; /* unsat */
 
 	return klee::Assignment(objects, values);
