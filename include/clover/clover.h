@@ -59,8 +59,8 @@ public:
 	Solver(klee::Solver *_solver = NULL);
 	std::optional<klee::Assignment> getAssignment(const klee::Query &query);
 
-	int eval(const klee::Query &query);
-	int eval(std::shared_ptr<BitVector> bv);
+	bool eval(const klee::Query &query);
+	bool eval(std::shared_ptr<BitVector> bv);
 
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 

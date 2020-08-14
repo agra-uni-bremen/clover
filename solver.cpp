@@ -38,7 +38,7 @@ Solver::getAssignment(const klee::Query &query)
 	return klee::Assignment(objects, values);
 }
 
-int
+bool
 Solver::eval(const klee::Query &query)
 {
 	klee::Solver::Validity v;
@@ -48,15 +48,15 @@ Solver::eval(const klee::Query &query)
 
 	switch (v) {
 	case klee::Solver::True:
-		return 1;
+		return true;
 	case klee::Solver::False:
-		return 0;
+		return false;
 	case klee::Solver::Unknown:
-		return -1;
+		throw std::logic_error("unknown solver result");
 	}
 }
 
-int
+bool
 Solver::eval(std::shared_ptr<BitVector> bv)
 {
 	klee::ConstraintSet cs;
