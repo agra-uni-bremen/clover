@@ -43,6 +43,7 @@ public:
 	/* TODO: Autogenerate these methods using a macro? */
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> concat(std::shared_ptr<ConcolicValue> other);
 private:
 	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional<std::shared_ptr<BitVector>> _symbolic = std::nullopt);
 
@@ -83,10 +84,13 @@ public:
 
 class ConcolicMemory {
 private:
-	std::unordered_map<size_t, std::shared_ptr<ConcolicValue>> data;
+	typedef uint32_t Addr;
+
+	Solver &solver;
+	std::unordered_map<Addr, std::shared_ptr<ConcolicValue>> data;
 
 public:
-	ConcolicMemory(void);
+	ConcolicMemory(Solver &_solver);
 
 	std::shared_ptr<ConcolicValue> load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);
 	void store(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);

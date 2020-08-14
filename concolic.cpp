@@ -39,3 +39,9 @@ ConcolicValue::slt(std::shared_ptr<ConcolicValue> other)
 		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
 	}
 }
+
+std::shared_ptr<ConcolicValue>
+ConcolicValue::concat(std::shared_ptr<ConcolicValue> other)
+{
+	throw "not implemented";
+}
