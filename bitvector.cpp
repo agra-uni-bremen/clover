@@ -5,6 +5,16 @@
 
 using namespace clover;
 
+#define BINARY_OPERATOR(NAME, FN)                                      \
+	std::shared_ptr<BitVector>                                     \
+	NAME(std::shared_ptr<BitVector> other) {                       \
+		auto exb = klee::createDefaultExprBuilder();           \
+		auto expr = exb-> FN (this->expr, other->expr);        \
+		                                                       \
+		auto bv = BitVector(expr);                             \
+		return std::make_shared<BitVector>(bv);                \
+	}
+
 static size_t
 toBits(unsigned size)
 {
@@ -40,33 +50,9 @@ BitVector::BitVector(const klee::Array *array)
 	this->expr = klee::Expr::createTempRead(array, bitsize);
 }
 
-std::shared_ptr<BitVector>
-BitVector::add(std::shared_ptr<BitVector> other) {
-	auto exb = klee::createDefaultExprBuilder();
-	auto expr = exb->Add(this->expr, other->expr);
-
-	auto bv = BitVector(expr);
-	return std::make_shared<BitVector>(bv);
-}
-
-std::shared_ptr<BitVector>
-BitVector::slt(std::shared_ptr<BitVector> other) {
-	auto exb = klee::createDefaultExprBuilder();
-	auto expr = exb->Slt(this->expr, other->expr);
-
-	auto bv = BitVector(expr);
-	return std::make_shared<BitVector>(bv);
-}
-
-std::shared_ptr<BitVector>
-BitVector::concat(std::shared_ptr<BitVector> other)
-{
-	auto exb = klee::createDefaultExprBuilder();
-	auto expr = exb->Concat(this->expr, other->expr);
-
-	auto bv = BitVector(expr);
-	return std::make_shared<BitVector>(bv);
-}
+BINARY_OPERATOR(BitVector::add, Add)
+BINARY_OPERATOR(BitVector::slt, Slt)
+BINARY_OPERATOR(BitVector::concat, Concat)
 
 std::shared_ptr<BitVector>
 BitVector::neg(void)
