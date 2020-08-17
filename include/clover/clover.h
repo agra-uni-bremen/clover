@@ -136,7 +136,7 @@ public:
 
 	void add(bool condition, std::shared_ptr<BitVector> bv);
 
-	std::optional<klee::Assignment> negateRandom(klee::ConstraintSet &cs);
+	std::optional<klee::Assignment> findNewPath(klee::ConstraintSet &cs);
 	ConcreteStore getStore(const klee::Assignment &assign);
 };
 

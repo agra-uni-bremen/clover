@@ -65,7 +65,7 @@ Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 }
 
 std::optional<klee::Assignment>
-Trace::negateRandom(klee::ConstraintSet &cs)
+Trace::findNewPath(klee::ConstraintSet &cs)
 {
 	Branch::Path path;
 	bool wastrue;
