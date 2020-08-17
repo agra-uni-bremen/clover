@@ -13,7 +13,7 @@ using namespace clover;
 Trace::Trace(Solver &_solver)
 		: solver(_solver)
 {
-	pathCondsRoot = nullptr;
+	pathCondsRoot = std::make_shared<Branch>(Branch()); /* placeholder */
 	pathCondsCurrent = nullptr;
 }
 
@@ -26,39 +26,26 @@ Trace::reset(void)
 void
 Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 {
-	/* We negate the branch condition later to find new paths.
-	 *
-	 *   Initially true: Find a path so that the condition is false.
-	 *   Initially false: Find a path so that the condition is true.
-	 */
-	auto bv_cond = (condition) ?  bv->neg() : bv;
-
-	auto branch = std::make_shared<Branch>(Branch(false, bv_cond));
-	if (pathCondsRoot == nullptr) { /* first added branch condition */
-		pathCondsRoot = branch;
-		goto ret;
-	} else if (pathCondsCurrent == nullptr) { /* reexploring after reset() */
-		branch = pathCondsRoot;
-		goto ret;
-	}
-
-	if (prevCond) {
-		if (pathCondsCurrent->true_branch) {
-			branch = pathCondsCurrent->true_branch;
-			goto ret; /* no new path found */
-		}
-		pathCondsCurrent->true_branch = branch;
+	std::shared_ptr<Branch> branch = nullptr;
+	if (pathCondsCurrent != nullptr) {
+		branch = pathCondsCurrent;
 	} else {
-		if (pathCondsCurrent->false_branch) {
-			branch = pathCondsCurrent->false_branch;
-			goto ret; /* no new path found */
-		}
-		pathCondsCurrent->false_branch = branch;
+		branch = pathCondsRoot;
 	}
 
-ret:
-	prevCond = condition;
-	pathCondsCurrent = branch;
+	assert(branch);
+	if (branch->isPlaceholder())
+		branch->bv = bv;
+
+	if (condition) {
+		if (!branch->true_branch)
+			branch->true_branch = std::make_shared<Branch>(Branch());
+		pathCondsCurrent = branch->true_branch;
+	} else {
+		if (!branch->false_branch)
+			branch->false_branch = std::make_shared<Branch>(Branch());
+		pathCondsCurrent = branch->false_branch;
+	}
 }
 
 klee::Query
@@ -81,12 +68,18 @@ std::optional<klee::Assignment>
 Trace::negateRandom(klee::ConstraintSet &cs)
 {
 	Branch::Path path;
+	bool wastrue;
 
-	if (!pathCondsRoot->getRandomPath(path))
+	if (!pathCondsRoot->getRandomPath(path, wastrue))
 		return std::nullopt;
-	auto query = getQuery(cs, path);
+	auto base_query = getQuery(cs, path);
 
-	auto assign = solver.getAssignment(query.negateExpr());
+	// If the branch condition was true in a previous run, we are
+	// looking for an assignment so that it becomes false. If it was
+	// false, we are looking for an assignment so that it becomes true.
+	auto query = (wastrue) ? base_query.negateExpr() : base_query;
+
+	auto assign = solver.getAssignment(query);
 	if (!assign.has_value())
 		return std::nullopt; /* unsat */
 

@@ -8,38 +8,51 @@ using namespace clover;
 #define CHECK_BRANCH(BRANCH, ...) \
 	(BRANCH && BRANCH->getRandomPath(__VA_ARGS__))
 
-Trace::Branch::Branch(bool _negated, std::shared_ptr<BitVector> _bv)
+Trace::Branch::Branch(void)
 {
-	negated = _negated;
-	bv = _bv;
+	/* This is node is a placeholder */
+	bv = nullptr;
 
 	true_branch = nullptr;
 	false_branch = nullptr;
 }
 
 bool
-Trace::Branch::getRandomPath(Path &path)
+Trace::Branch::isPlaceholder(void)
 {
-	assert(this->bv != nullptr);
+	return this->bv == nullptr;
+}
+
+bool
+Trace::Branch::getRandomPath(Path &path, bool &wastrue)
+{
+	if (this->isPlaceholder())
+		return false;
 	path.push_back(this->bv);
 
 	/* XXX: This prefers node in the upper tree */
-	if (!this->negated) {
-		this->negated = true;
-		return true;
+	if (!this->true_branch) {
+		assert(this->false_branch);
+		wastrue = false;
+
+		return true; /* Found undiscovered path */
+	} else if (!this->false_branch) {
+		assert(this->true_branch);
+		wastrue = true;
+
+		return true; /* Found undiscovered path */
 	}
 
 	/* Randomly traverse true or false branch first */
 	int random = rand();
 	if (random % 2 == 0)
-		if (CHECK_BRANCH(true_branch, path) ||
-		    CHECK_BRANCH(false_branch, path))
+		if (CHECK_BRANCH(true_branch, path, wastrue) ||
+		    CHECK_BRANCH(false_branch, path, wastrue))
 			return true;
 	else
-		if (CHECK_BRANCH(false_branch, path) ||
-		    CHECK_BRANCH(true_branch, path))
+		if (CHECK_BRANCH(false_branch, path, wastrue) ||
+		    CHECK_BRANCH(true_branch, path, wastrue))
 			return true;
-
 
 	path.pop_back(); // node is not on path
 	return false;

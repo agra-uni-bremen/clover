@@ -108,26 +108,25 @@ private:
 	public:
 		typedef std::vector<std::shared_ptr<BitVector>> Path;
 
-		bool negated;
 		std::shared_ptr<BitVector> bv;
 
 		std::shared_ptr<Branch> true_branch;
 		std::shared_ptr<Branch> false_branch;
 
-		Branch(bool _negated, std::shared_ptr<BitVector> _bv);
+		Branch(void);
+		bool isPlaceholder(void);
 
-		/* Get seemingly random path to an unnegated node in the tree.
-		 * The node is also marked as negated before a path is returned. */
-		bool getRandomPath(Path &path);
+		/* Returns seemingly random path to a node in the tree
+		 * for which either the false or the true branch wasn't
+		 * taken yet (as indicated by wastrue). If no such node
+		 * exists, false is returned. */
+		bool getRandomPath(Path &path, bool &wastrue);
 	};
 
 	Solver &solver;
 
 	std::shared_ptr<Branch> pathCondsRoot;
 	std::shared_ptr<Branch> pathCondsCurrent;
-
-	/* Whether the previsouly added branch was true or false */
-	bool prevCond;
 
 	klee::Query getQuery(klee::ConstraintSet &cs, Branch::Path &path);
 
