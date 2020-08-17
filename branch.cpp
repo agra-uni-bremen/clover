@@ -32,20 +32,12 @@ Trace::Branch::getRandomPath(Path &path, bool &wastrue)
 	path.push_back(this->bv);
 
 	/* XXX: This prefers node in the upper tree */
-	if (!wasNegated) {
-		if (!this->true_branch) {
-			assert(this->false_branch);
-			wastrue = false;
+	if (!wasNegated && (!this->true_branch || !this->false_branch)) {
+		wastrue = (this->true_branch != nullptr);
+		if (wastrue) assert(this->false_branch == nullptr);
 
-			wasNegated = true;
-			return true; /* Found undiscovered path */
-		} else if (!this->false_branch) {
-			assert(this->true_branch);
-			wastrue = true;
-
-			wasNegated = true;
-			return true; /* Found undiscovered path */
-		}
+		wasNegated = true;
+		return true; /* Found undiscovered path */
 	}
 
 	/* Randomly traverse true or false branch first */
