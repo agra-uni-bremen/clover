@@ -73,3 +73,13 @@ BitVector::extract(unsigned offset, klee::Expr::Width width)
 	auto bv = BitVector(expr);
 	return std::make_shared<BitVector>(bv);
 }
+
+std::shared_ptr<BitVector>
+BitVector::sext(klee::Expr::Width width)
+{
+	auto exb = klee::createDefaultExprBuilder();
+	auto expr = exb->SExt(this->expr, width);
+
+	auto bv = BitVector(expr);
+	return std::make_shared<BitVector>(bv);
+}

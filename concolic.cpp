@@ -40,3 +40,16 @@ ConcolicValue::extract(unsigned offset, klee::Expr::Width width)
 		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
 	}
 }
+
+std::shared_ptr<ConcolicValue>
+ConcolicValue::sext(klee::Expr::Width width)
+{
+	auto bvv = concrete->sext(width);
+
+	if (this->symbolic.has_value()) {
+		auto bvs = (*symbolic)->sext(width);
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv, bvs));
+	} else {
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
+	}
+}

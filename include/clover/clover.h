@@ -32,6 +32,7 @@ public:
 	std::shared_ptr<BitVector> concat(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> extract(unsigned offset, klee::Expr::Width width);
 	std::shared_ptr<BitVector> neg(void);
+	std::shared_ptr<BitVector> sext(klee::Expr::Width width);
 
 	friend class Solver;
 	friend class Trace;
@@ -47,6 +48,7 @@ public:
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> concat(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> extract(unsigned offset, klee::Expr::Width width);
+	std::shared_ptr<ConcolicValue> sext(klee::Expr::Width width);
 
 private:
 	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional<std::shared_ptr<BitVector>> _symbolic = std::nullopt);
