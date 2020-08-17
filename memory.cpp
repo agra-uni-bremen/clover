@@ -41,6 +41,7 @@ ConcolicMemory::store(std::shared_ptr<ConcolicValue> addr, std::shared_ptr<Conco
 		auto write_addr = addr->add(solver.BVC(std::nullopt, off));
 		auto concrete_addr = solver.evalValue<ConcolicMemory::Addr>(write_addr->concrete);
 
-		data[concrete_addr] = value->extract(i, klee::Expr::Int8);
+		// Extract expression works on bit indicies, not bytes.
+		data[concrete_addr] = value->extract(i * 8, klee::Expr::Int8);
 	}
 }
