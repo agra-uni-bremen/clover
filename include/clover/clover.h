@@ -109,6 +109,7 @@ private:
 		typedef std::vector<std::shared_ptr<BitVector>> Path;
 
 		std::shared_ptr<BitVector> bv;
+		bool wasNegated; /* Don't negate nodes twice (could be unsat) */
 
 		std::shared_ptr<Branch> true_branch;
 		std::shared_ptr<Branch> false_branch;
