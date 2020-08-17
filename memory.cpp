@@ -25,7 +25,7 @@ ConcolicMemory::load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize)
 		if (!result) {
 			result = byte;
 		} else {
-			result->concat(byte);
+			result = result->concat(byte);
 		}
 	}
 
