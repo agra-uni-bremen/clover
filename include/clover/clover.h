@@ -32,7 +32,6 @@ public:
 	std::shared_ptr<BitVector> band(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> concat(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> extract(unsigned offset, klee::Expr::Width width);
-	std::shared_ptr<BitVector> neg(void);
 	std::shared_ptr<BitVector> sext(klee::Expr::Width width);
 
 	friend class Solver;
