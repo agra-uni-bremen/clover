@@ -15,6 +15,13 @@ Solver::Solver(klee::Solver *_solver)
 	if (!_solver)
 		_solver = klee::createCoreSolver(klee::CoreSolverType::STP_SOLVER);
 
+	// Create fancy solver chain based on given core solver.
+	// Taken from lib/Solver/ConstructSolverChain.cpp
+	_solver = klee::createFastCexSolver(_solver);
+	_solver = klee::createCexCachingSolver(_solver);
+	_solver = klee::createCachingSolver(_solver);
+	_solver = klee::createIndependentSolver(_solver);
+
 	// Copied from tools/kleaver/main.cpp
 	builder = klee::createDefaultExprBuilder();
 	builder = createConstantFoldingExprBuilder(builder);
