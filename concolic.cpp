@@ -32,6 +32,19 @@ BINARY_OPERATOR(ConcolicValue::band, band)
 BINARY_OPERATOR(ConcolicValue::concat, concat)
 
 std::shared_ptr<ConcolicValue>
+ConcolicValue::bnot(void)
+{
+	auto bvv = concrete->bnot();
+
+	if (this->symbolic.has_value()) {
+		auto bvs = (*symbolic)->bnot();
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv, bvs));
+	} else {
+		return std::make_shared<ConcolicValue>(ConcolicValue(bvv));
+	}
+}
+
+std::shared_ptr<ConcolicValue>
 ConcolicValue::extract(unsigned offset, klee::Expr::Width width)
 {
 	auto bvv = concrete->extract(offset, width);

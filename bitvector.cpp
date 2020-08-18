@@ -59,6 +59,16 @@ BINARY_OPERATOR(BitVector::band, And)
 BINARY_OPERATOR(BitVector::concat, Concat)
 
 std::shared_ptr<BitVector>
+BitVector::bnot(void)
+{
+	auto expr = builder->Not(this->expr);
+
+	auto bv = BitVector(builder, expr);
+	return std::make_shared<BitVector>(bv);
+}
+
+
+std::shared_ptr<BitVector>
 BitVector::extract(unsigned offset, klee::Expr::Width width)
 {
 	auto expr = builder->Extract(this->expr, offset, width);

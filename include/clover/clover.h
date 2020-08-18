@@ -34,6 +34,7 @@ public:
 	std::shared_ptr<BitVector> uge(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> band(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> concat(std::shared_ptr<BitVector> other);
+	std::shared_ptr<BitVector> bnot(void);
 	std::shared_ptr<BitVector> extract(unsigned offset, klee::Expr::Width width);
 	std::shared_ptr<BitVector> sext(klee::Expr::Width width);
 
@@ -52,6 +53,7 @@ public:
 	std::shared_ptr<ConcolicValue> uge(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> band(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> concat(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> bnot(void);
 	std::shared_ptr<ConcolicValue> extract(unsigned offset, klee::Expr::Width width);
 	std::shared_ptr<ConcolicValue> sext(klee::Expr::Width width);
 
