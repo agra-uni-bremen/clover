@@ -8,6 +8,7 @@
 #include <klee/Expr/ArrayCache.h>
 #include <klee/Expr/Expr.h>
 #include <klee/Solver/Solver.h>
+#include <klee/Expr/ExprBuilder.h>
 
 #include <map>
 #include <optional>
@@ -20,10 +21,11 @@ typedef std::variant<uint8_t, uint32_t> IntValue;
 class BitVector {
 private:
 	klee::ref<klee::Expr> expr;
+	klee::ExprBuilder *builder = NULL;
 
-	BitVector(const klee::ref<klee::Expr> &expr);
-	BitVector(IntValue value);
-	BitVector(const klee::Array *array);
+	BitVector(klee::ExprBuilder *_builder, const klee::ref<klee::Expr> &expr);
+	BitVector(klee::ExprBuilder *_builder, IntValue value);
+	BitVector(klee::ExprBuilder *_builder, const klee::Array *array);
 
 public:
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
@@ -64,6 +66,7 @@ class Solver {
 private:
 	klee::Solver *solver;
 	klee::ArrayCache array_cache;
+	klee::ExprBuilder *builder = NULL;
 
 public:
 	Solver(klee::Solver *_solver = NULL);

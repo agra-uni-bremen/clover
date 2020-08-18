@@ -1,4 +1,3 @@
-#include <klee/Expr/ExprBuilder.h>
 #include <clover/clover.h>
 
 #include "fns.h"
@@ -8,10 +7,9 @@ using namespace clover;
 #define BINARY_OPERATOR(NAME, FN)                                      \
 	std::shared_ptr<BitVector>                                     \
 	NAME(std::shared_ptr<BitVector> other) {                       \
-		auto exb = klee::createDefaultExprBuilder();           \
-		auto expr = exb-> FN (this->expr, other->expr);        \
+		auto expr = builder-> FN (this->expr, other->expr);    \
 		                                                       \
-		auto bv = BitVector(expr);                             \
+		auto bv = BitVector(builder, expr);                    \
 		return std::make_shared<BitVector>(bv);                \
 	}
 
@@ -21,13 +19,13 @@ toBits(unsigned size)
     return size * 8;
 }
 
-BitVector::BitVector(const klee::ref<klee::Expr> &_expr)
-		: expr(_expr)
+BitVector::BitVector(klee::ExprBuilder *_builder, const klee::ref<klee::Expr> &_expr)
+		: builder(_builder), expr(_expr)
 {
 	return;
 }
 
-BitVector::BitVector(IntValue value)
+BitVector::BitVector(klee::ExprBuilder *_builder, IntValue value)
 {
 	size_t bytesize, bitsize;
 
@@ -35,10 +33,12 @@ BitVector::BitVector(IntValue value)
 	bitsize = toBits(bytesize);
 
 	uint64_t exprValue = intToUint(value);
+
 	this->expr = klee::ConstantExpr::create(exprValue, (unsigned)bitsize);
+	this->builder = _builder;
 }
 
-BitVector::BitVector(const klee::Array *array)
+BitVector::BitVector(klee::ExprBuilder *_builder, const klee::Array *array)
 {
 	unsigned bitsize;
 
@@ -48,6 +48,7 @@ BitVector::BitVector(const klee::Array *array)
 	bitsize = toBits(array->getSize());
 
 	this->expr = klee::Expr::createTempRead(array, bitsize);
+	this->builder = _builder;
 }
 
 BINARY_OPERATOR(BitVector::add, Add)
@@ -60,19 +61,17 @@ BINARY_OPERATOR(BitVector::concat, Concat)
 std::shared_ptr<BitVector>
 BitVector::extract(unsigned offset, klee::Expr::Width width)
 {
-	auto exb = klee::createDefaultExprBuilder();
-	auto expr = exb->Extract(this->expr, offset, width);
+	auto expr = builder->Extract(this->expr, offset, width);
 
-	auto bv = BitVector(expr);
+	auto bv = BitVector(builder, expr);
 	return std::make_shared<BitVector>(bv);
 }
 
 std::shared_ptr<BitVector>
 BitVector::sext(klee::Expr::Width width)
 {
-	auto exb = klee::createDefaultExprBuilder();
-	auto expr = exb->SExt(this->expr, width);
+	auto expr = builder->SExt(this->expr, width);
 
-	auto bv = BitVector(expr);
+	auto bv = BitVector(builder, expr);
 	return std::make_shared<BitVector>(bv);
 }

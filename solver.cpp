@@ -15,6 +15,11 @@ Solver::Solver(klee::Solver *_solver)
 	if (!_solver)
 		_solver = klee::createCoreSolver(klee::CoreSolverType::STP_SOLVER);
 
+	// Copied from tools/kleaver/main.cpp
+	builder = klee::createDefaultExprBuilder();
+	builder = createConstantFoldingExprBuilder(builder);
+	builder = createSimplifyingExprBuilder(builder);
+
 	this->solver = _solver;
 	return;
 }
@@ -68,14 +73,14 @@ Solver::eval(std::shared_ptr<BitVector> bv)
 std::shared_ptr<ConcolicValue>
 Solver::BVC(std::optional<std::string> name, IntValue value)
 {
-	auto concrete = std::make_shared<BitVector>(BitVector(value));
+	auto concrete = std::make_shared<BitVector>(BitVector(builder, value));
 	if (!name.has_value()) {
 		auto concolic = ConcolicValue(concrete);
 		return std::make_shared<ConcolicValue>(concolic);
 	}
 
 	auto array = array_cache.CreateArray(*name, intByteSize(value));
-	auto symbolic = std::make_shared<BitVector>(BitVector(array));
+	auto symbolic = std::make_shared<BitVector>(BitVector(builder, array));
 
 	auto concolic = ConcolicValue(concrete, symbolic);
 	return std::make_shared<ConcolicValue>(concolic);
