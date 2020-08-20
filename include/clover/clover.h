@@ -151,6 +151,22 @@ public:
 	ConcreteStore getStore(const klee::Assignment &assign);
 };
 
+class Context {
+private:
+	std::map<size_t, IntValue> registers;
+	std::map<size_t, IntValue> memory;
+
+	Solver &solver;
+public:
+	typedef uint32_t Address;
+
+	Context(Solver &_solver);
+	bool hasNewPath(Trace &trace);
+
+	std::shared_ptr<ConcolicValue> getSymbolic(size_t reg);
+	std::shared_ptr<ConcolicValue> getSymbolic(Address addr, size_t len);
+};
+
 };
 
 #endif
