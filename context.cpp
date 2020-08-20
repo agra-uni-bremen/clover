@@ -13,7 +13,7 @@ parseRegister(std::string name)
 	if (name.length() < 2 || name.at(0) != 'x')
 		return std::nullopt;
 
-	auto idx = std::stoi(name.substr(1));
+	auto idx = std::stoul(name.substr(1));
 	return idx;
 }
 
@@ -27,8 +27,8 @@ parseMemory(std::string name)
 		if (match.size() != 3) /* match includes the entire string */
 			return std::nullopt;
 
-		auto addr = std::stoi(match[1].str());
-		auto size = std::stoi(match[2].str());
+		auto addr = std::stoul(match[1].str());
+		auto size = std::stoul(match[2].str());
 
 		return std::make_pair((ExecutionContext::Address)addr, (size_t)size);
 	}
