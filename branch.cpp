@@ -42,14 +42,15 @@ Trace::Branch::getRandomPath(Path &path, bool &wastrue)
 
 	/* Randomly traverse true or false branch first */
 	int random = rand();
-	if (random % 2 == 0)
+	if (random % 2 == 0) {
 		if (CHECK_BRANCH(true_branch, path, wastrue) ||
 		    CHECK_BRANCH(false_branch, path, wastrue))
 			return true;
-	else
+	} else {
 		if (CHECK_BRANCH(false_branch, path, wastrue) ||
 		    CHECK_BRANCH(true_branch, path, wastrue))
 			return true;
+	}
 
 	path.pop_back(); // node is not on path
 	return false;
