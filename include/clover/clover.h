@@ -106,7 +106,10 @@ private:
 public:
 	ConcolicMemory(Solver &_solver);
 
+	std::shared_ptr<ConcolicValue> load(Addr addr, unsigned bytesize);
 	std::shared_ptr<ConcolicValue> load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);
+
+	void store(Addr addr, std::shared_ptr<ConcolicValue> value, unsigned bytesize);
 	void store(std::shared_ptr<ConcolicValue> addr, std::shared_ptr<ConcolicValue> value, unsigned bytesize);
 };
 
@@ -157,6 +160,8 @@ private:
 	std::map<size_t, IntValue> memory;
 
 	Solver &solver;
+
+	IntValue findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key);
 public:
 	typedef uint32_t Address;
 
