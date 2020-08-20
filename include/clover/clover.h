@@ -155,7 +155,7 @@ public:
 	ConcreteStore getStore(const klee::Assignment &assign);
 };
 
-class Context {
+class ExecutionContext {
 private:
 	std::map<size_t, IntValue> registers;
 	std::map<size_t, IntValue> memory;
@@ -166,7 +166,7 @@ private:
 public:
 	typedef uint32_t Address;
 
-	Context(Solver &_solver);
+	ExecutionContext(Solver &_solver);
 	bool hasNewPath(Trace &trace);
 
 	std::shared_ptr<ConcolicValue> getSymbolic(size_t reg);

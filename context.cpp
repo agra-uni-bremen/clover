@@ -17,7 +17,7 @@ parseRegister(std::string name)
 	return idx;
 }
 
-static std::optional<std::pair<Context::Address, size_t>>
+static std::optional<std::pair<ExecutionContext::Address, size_t>>
 parseMemory(std::string name)
 {
 	std::regex re("memory<(.*),(.*)>");
@@ -30,19 +30,19 @@ parseMemory(std::string name)
 		auto addr = std::stoi(match[1].str());
 		auto size = std::stoi(match[2].str());
 
-		return std::make_pair((Context::Address)addr, (size_t)size);
+		return std::make_pair((ExecutionContext::Address)addr, (size_t)size);
 	}
 
 	return std::nullopt;
 }
 
-Context::Context(Solver &_solver) : solver(_solver)
+ExecutionContext::ExecutionContext(Solver &_solver) : solver(_solver)
 {
 	return;
 }
 
 bool
-Context::hasNewPath(Trace &trace)
+ExecutionContext::hasNewPath(Trace &trace)
 {
 	klee::ConstraintSet cs;
 	auto assign = trace.findNewPath(cs);
@@ -73,7 +73,7 @@ Context::hasNewPath(Trace &trace)
 }
 
 IntValue
-Context::findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key)
+ExecutionContext::findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key)
 {
 	IntValue concrete;
 
@@ -89,7 +89,7 @@ Context::findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key)
 }
 
 std::shared_ptr<ConcolicValue>
-Context::getSymbolic(size_t reg)
+ExecutionContext::getSymbolic(size_t reg)
 {
 	IntValue concrete = findRemoveOrRandom(registers, reg);
 	return solver.BVC("x" + std::to_string(reg), concrete);
@@ -100,7 +100,7 @@ Context::getSymbolic(size_t reg)
  * without splitting it into single bytes as this split is already
  * done by the ConcolicMemory::store function */
 std::shared_ptr<ConcolicValue>
-Context::getSymbolic(Address addr, size_t len)
+ExecutionContext::getSymbolic(Address addr, size_t len)
 {
 	std::shared_ptr<ConcolicValue> result = nullptr;
 	for (size_t i = 0; i < len; i++) {
