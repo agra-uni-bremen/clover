@@ -11,17 +11,16 @@ ConcolicMemory::ConcolicMemory(Solver &_solver)
 std::shared_ptr<ConcolicValue>
 ConcolicMemory::load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize)
 {
-	std::shared_ptr<ConcolicValue> result = nullptr;
-	for (uint32_t i = 0; i < bytesize; i++) {
-		IntValue off = (uint32_t)i;
+	auto base_addr = solver.evalValue<ConcolicMemory::Addr>(addr->concrete);
 
-		auto read_addr = addr->add(solver.BVC(std::nullopt, off));
-		auto concrete_addr = solver.evalValue<ConcolicMemory::Addr>(read_addr->concrete);
-		if (!data.count(concrete_addr)) {
+	std::shared_ptr<ConcolicValue> result = nullptr;
+	for (uint32_t off = 0; off < bytesize; off++) {
+		auto read_addr = base_addr + off;
+		if (!data.count(read_addr)) {
 			throw std::range_error("access to uninitialized memory"); // TODO
 		}
 
-		auto byte = data.at(concrete_addr);
+		auto byte = data.at(read_addr);
 		if (!result) {
 			result = byte;
 		} else {
@@ -35,13 +34,10 @@ ConcolicMemory::load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize)
 void
 ConcolicMemory::store(std::shared_ptr<ConcolicValue> addr, std::shared_ptr<ConcolicValue> value, unsigned bytesize)
 {
-	for (uint32_t i = 0; i < bytesize; i++) {
-		IntValue off = (uint32_t)i;
+	auto base_addr = solver.evalValue<ConcolicMemory::Addr>(addr->concrete);
 
-		auto write_addr = addr->add(solver.BVC(std::nullopt, off));
-		auto concrete_addr = solver.evalValue<ConcolicMemory::Addr>(write_addr->concrete);
-
+	for (size_t off = 0; off < bytesize; off++) {
 		// Extract expression works on bit indicies, not bytes.
-		data[concrete_addr] = value->extract(i * 8, klee::Expr::Int8);
+		data[base_addr + off] = value->extract(off * 8, klee::Expr::Int8);
 	}
 }
