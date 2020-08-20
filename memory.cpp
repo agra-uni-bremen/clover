@@ -8,6 +8,12 @@ ConcolicMemory::ConcolicMemory(Solver &_solver)
 	return;
 }
 
+void
+ConcolicMemory::reset(void)
+{
+	data.clear();
+}
+
 std::shared_ptr<ConcolicValue>
 ConcolicMemory::load(Addr addr, unsigned bytesize)
 {

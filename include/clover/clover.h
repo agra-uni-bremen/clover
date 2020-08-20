@@ -105,6 +105,7 @@ private:
 
 public:
 	ConcolicMemory(Solver &_solver);
+	void reset(void);
 
 	std::shared_ptr<ConcolicValue> load(Addr addr, unsigned bytesize);
 	std::shared_ptr<ConcolicValue> load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize);
