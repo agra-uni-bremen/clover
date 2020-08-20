@@ -95,6 +95,10 @@ Context::getSymbolic(size_t reg)
 	return solver.BVC("x" + std::to_string(reg), concrete);
 }
 
+/* TODO: Possible optimization: Assume that memory passed to this
+ * function does not overlap and store the value directly in the map
+ * without splitting it into single bytes as this split is already
+ * done by the ConcolicMemory::store function */
 std::shared_ptr<ConcolicValue>
 Context::getSymbolic(Address addr, size_t len)
 {
