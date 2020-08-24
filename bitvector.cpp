@@ -20,7 +20,7 @@ toBits(unsigned size)
 }
 
 BitVector::BitVector(klee::ExprBuilder *_builder, const klee::ref<klee::Expr> &_expr)
-		: builder(_builder), expr(_expr)
+		: expr(_expr), builder(_builder)
 {
 	return;
 }

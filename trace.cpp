@@ -94,7 +94,7 @@ Trace::getStore(const klee::Assignment &assign)
 		auto array = b.first;
 		auto value = b.second;
 
-		std::string name = b.first->getName();
+		std::string name = array->getName();
 		store[name] = intFromVector(value);
 	}
 

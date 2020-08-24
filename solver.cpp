@@ -66,6 +66,8 @@ Solver::eval(const klee::Query &query)
 	case klee::Solver::Unknown:
 		throw std::logic_error("unknown solver result");
 	}
+
+	assert(0); /* unreachable */
 }
 
 bool
