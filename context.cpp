@@ -7,6 +7,8 @@
 
 using namespace clover;
 
+/* TODO: Add reset method to clear registers and memory */
+
 static std::optional<size_t>
 parseRegister(std::string name)
 {
@@ -111,7 +113,7 @@ ExecutionContext::getSymbolic(Address addr, size_t len)
 			+ "," + std::to_string(byte_size) + ">";
 
 		IntValue concrete = findRemoveOrRandom(memory, byte_addr);
-		auto symbyte = solver.BVC(vname, concrete);
+		auto symbyte = solver.BVC(vname, concrete); /* TODO: eternal=false? */
 
 		if (!result) {
 			result = symbyte;
