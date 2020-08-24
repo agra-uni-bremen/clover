@@ -13,6 +13,7 @@
 #include <map>
 #include <optional>
 #include <variant>
+#include <memory>
 
 namespace clover {
 
