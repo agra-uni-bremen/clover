@@ -34,6 +34,7 @@ public:
 	std::shared_ptr<BitVector> ne(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> lshl(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> lshr(std::shared_ptr<BitVector> other);
+	std::shared_ptr<BitVector> ashr(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> sub(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
@@ -61,6 +62,7 @@ public:
 	std::shared_ptr<ConcolicValue> ne(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> lshl(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> lshr(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> ashr(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sub(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
