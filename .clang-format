@@ -1,0 +1,23 @@
+ColumnLimit: 0
+IndentWidth: 8
+AccessModifierOffset: -8
+UseTab: ForIndentation
+
+AlignOperands: true
+AlignAfterOpenBracket: Align
+IndentCaseLabels: false
+
+BreakBeforeBraces: WebKit
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+
+AllowShortIfStatementsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+
+DerivePointerAlignment: false
+PointerAlignment: Right
+
+PenaltyBreakAssignment: 9999
+PenaltyBreakBeforeFirstCallParameter: 9999
