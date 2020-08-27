@@ -30,6 +30,7 @@ BINARY_OPERATOR(ConcolicValue::slt, slt)
 BINARY_OPERATOR(ConcolicValue::ult, ult)
 BINARY_OPERATOR(ConcolicValue::uge, uge)
 BINARY_OPERATOR(ConcolicValue::band, band)
+BINARY_OPERATOR(ConcolicValue::bxor, bxor)
 BINARY_OPERATOR(ConcolicValue::concat, concat)
 
 std::shared_ptr<ConcolicValue>
