@@ -31,6 +31,7 @@ private:
 
 public:
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
+	std::shared_ptr<BitVector> sub(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> ult(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> uge(std::shared_ptr<BitVector> other);
@@ -52,6 +53,7 @@ public:
 	std::optional<std::shared_ptr<BitVector>> symbolic;
 
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> sub(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> ult(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> uge(std::shared_ptr<ConcolicValue> other);

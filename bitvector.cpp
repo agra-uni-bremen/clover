@@ -47,6 +47,7 @@ BitVector::BitVector(klee::ExprBuilder *_builder, const klee::Array *array)
 }
 
 BINARY_OPERATOR(BitVector::add, Add)
+BINARY_OPERATOR(BitVector::sub, Sub)
 BINARY_OPERATOR(BitVector::slt, Slt)
 BINARY_OPERATOR(BitVector::ult, Ult)
 BINARY_OPERATOR(BitVector::uge, Uge)
