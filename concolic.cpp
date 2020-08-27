@@ -25,6 +25,8 @@ ConcolicValue::ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional
 	return;
 }
 
+BINARY_OPERATOR(ConcolicValue::eq, eq)
+BINARY_OPERATOR(ConcolicValue::ne, ne)
 BINARY_OPERATOR(ConcolicValue::add, add)
 BINARY_OPERATOR(ConcolicValue::sub, sub)
 BINARY_OPERATOR(ConcolicValue::slt, slt)

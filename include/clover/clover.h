@@ -30,6 +30,8 @@ private:
 	BitVector(klee::ExprBuilder *_builder, const klee::Array *array);
 
 public:
+	std::shared_ptr<BitVector> eq(std::shared_ptr<BitVector> other);
+	std::shared_ptr<BitVector> ne(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> sub(std::shared_ptr<BitVector> other);
 	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
@@ -52,6 +54,8 @@ public:
 	std::shared_ptr<BitVector> concrete;
 	std::optional<std::shared_ptr<BitVector>> symbolic;
 
+	std::shared_ptr<ConcolicValue> eq(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> ne(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sub(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
