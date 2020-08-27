@@ -48,6 +48,8 @@ BitVector::BitVector(klee::ExprBuilder *_builder, const klee::Array *array)
 
 BINARY_OPERATOR(BitVector::eq, Eq)
 BINARY_OPERATOR(BitVector::ne, Ne)
+BINARY_OPERATOR(BitVector::lshl, Shl)
+BINARY_OPERATOR(BitVector::lshr, LShr)
 BINARY_OPERATOR(BitVector::add, Add)
 BINARY_OPERATOR(BitVector::sub, Sub)
 BINARY_OPERATOR(BitVector::slt, Slt)
