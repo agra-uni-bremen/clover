@@ -51,6 +51,7 @@ BINARY_OPERATOR(BitVector::slt, Slt)
 BINARY_OPERATOR(BitVector::ult, Ult)
 BINARY_OPERATOR(BitVector::uge, Uge)
 BINARY_OPERATOR(BitVector::band, And)
+BINARY_OPERATOR(BitVector::bor, Or)
 BINARY_OPERATOR(BitVector::bxor, Xor)
 BINARY_OPERATOR(BitVector::concat, Concat)
 
