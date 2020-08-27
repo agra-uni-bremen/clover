@@ -13,12 +13,6 @@ using namespace clover;
 		return std::make_shared<BitVector>(bv);                \
 	}
 
-static size_t
-toBits(unsigned size)
-{
-    return size * 8;
-}
-
 BitVector::BitVector(klee::ExprBuilder *_builder, const klee::ref<klee::Expr> &_expr)
 		: expr(_expr), builder(_builder)
 {
@@ -30,7 +24,7 @@ BitVector::BitVector(klee::ExprBuilder *_builder, IntValue value)
 	size_t bytesize, bitsize;
 
 	bytesize = intByteSize(value);
-	bitsize = toBits(bytesize);
+	bitsize = bytesize * 8;
 
 	uint64_t exprValue = intToUint(value);
 
@@ -45,7 +39,7 @@ BitVector::BitVector(klee::ExprBuilder *_builder, const klee::Array *array)
 	/* Array size is in bytes, needed for CreateArray(). However,
 	 * createTempRead() requires a size in bits, calling this
 	 * function is mandatory to convert the array to an expression. */
-	bitsize = toBits(array->getSize());
+	bitsize = array->getSize() * 8;
 
 	this->expr = klee::Expr::createTempRead(array, bitsize);
 	this->builder = _builder;
