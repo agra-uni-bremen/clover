@@ -45,14 +45,12 @@ intFromVector(std::vector<unsigned char> vector)
 		uint8_t v;
 		memcpy(&v, &vector[0], sizeof(uint8_t));
 		intval = v;
-	}
-		break;
+	} break;
 	case 4: {
 		uint32_t v;
 		memcpy(&v, &vector[0], sizeof(uint32_t));
 		intval = v;
-	}
-		break;
+	} break;
 	default:
 		assert(0);
 	}

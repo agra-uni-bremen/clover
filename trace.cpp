@@ -1,17 +1,17 @@
 #include <assert.h>
-#include <stdlib.h>
 #include <stddef.h>
+#include <stdlib.h>
 
-#include <klee/Expr/ExprUtil.h>
-#include <klee/Expr/Constraints.h>
 #include <clover/clover.h>
+#include <klee/Expr/Constraints.h>
+#include <klee/Expr/ExprUtil.h>
 
 #include "fns.h"
 
 using namespace clover;
 
 Trace::Trace(Solver &_solver)
-		: solver(_solver)
+    : solver(_solver)
 {
 	pathCondsRoot = std::make_shared<Branch>(Branch()); /* placeholder */
 	pathCondsCurrent = nullptr;
@@ -90,7 +90,7 @@ ConcreteStore
 Trace::getStore(const klee::Assignment &assign)
 {
 	ConcreteStore store;
-	for (auto const& b : assign.bindings) {
+	for (auto const &b : assign.bindings) {
 		auto array = b.first;
 		auto value = b.second;
 

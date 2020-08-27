@@ -1,20 +1,20 @@
 #ifndef CLOVER_H
 #define CLOVER_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-#include <klee/Expr/Assignment.h>
 #include <klee/Expr/ArrayCache.h>
+#include <klee/Expr/Assignment.h>
 #include <klee/Expr/Expr.h>
-#include <klee/Solver/Solver.h>
 #include <klee/Expr/ExprBuilder.h>
+#include <klee/Solver/Solver.h>
 
 #include <map>
-#include <unordered_map>
-#include <optional>
-#include <variant>
 #include <memory>
+#include <optional>
+#include <unordered_map>
+#include <variant>
 
 namespace clover {
 
@@ -81,7 +81,9 @@ public:
 
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 
-	template <typename T> T evalValue(const klee::Query &query) {
+	template <typename T>
+	T evalValue(const klee::Query &query)
+	{
 		klee::ref<klee::ConstantExpr> r;
 
 		if (!solver->getValue(query, r))
@@ -90,7 +92,9 @@ public:
 		return (T)r->getZExtValue(sizeof(T) * 8);
 	}
 
-	template <typename T> T evalValue(std::shared_ptr<BitVector> bv) {
+	template <typename T>
+	T evalValue(std::shared_ptr<BitVector> bv)
+	{
 		klee::ConstraintSet cs;
 
 		auto q = klee::Query(cs, bv->expr);
@@ -165,6 +169,7 @@ private:
 	Solver &solver;
 
 	IntValue findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key);
+
 public:
 	typedef uint32_t Address;
 
@@ -175,6 +180,6 @@ public:
 	std::shared_ptr<ConcolicValue> getSymbolic(Address addr, size_t len);
 };
 
-};
+}; // namespace clover
 
 #endif

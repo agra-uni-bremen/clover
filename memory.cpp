@@ -3,7 +3,7 @@
 using namespace clover;
 
 ConcolicMemory::ConcolicMemory(Solver &_solver)
-	: solver(_solver)
+    : solver(_solver)
 {
 	return;
 }

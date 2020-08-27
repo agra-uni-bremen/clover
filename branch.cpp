@@ -34,7 +34,8 @@ Trace::Branch::getRandomPath(Path &path, bool &wastrue)
 	/* XXX: This prefers node in the upper tree */
 	if (!wasNegated && (!this->true_branch || !this->false_branch)) {
 		wastrue = (this->true_branch != nullptr);
-		if (wastrue) assert(this->false_branch == nullptr);
+		if (wastrue)
+			assert(this->false_branch == nullptr);
 
 		wasNegated = true;
 		return true; /* Found undiscovered path */

@@ -3,8 +3,8 @@
 
 #include <clover/clover.h>
 
-#include <klee/Expr/ExprUtil.h>
 #include <klee/Expr/Constraints.h>
+#include <klee/Expr/ExprUtil.h>
 
 #include "fns.h"
 

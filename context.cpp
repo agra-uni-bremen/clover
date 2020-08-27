@@ -38,7 +38,8 @@ parseMemory(std::string name)
 	return std::nullopt;
 }
 
-ExecutionContext::ExecutionContext(Solver &_solver) : solver(_solver)
+ExecutionContext::ExecutionContext(Solver &_solver)
+    : solver(_solver)
 {
 	return;
 }
@@ -109,8 +110,7 @@ ExecutionContext::getSymbolic(Address addr, size_t len)
 		Address byte_addr = addr + i;
 		unsigned byte_size = 1;
 
-		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr)
-			+ "," + std::to_string(byte_size) + ">";
+		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr) + "," + std::to_string(byte_size) + ">";
 
 		IntValue concrete = findRemoveOrRandom(memory, byte_addr);
 		auto symbyte = solver.BVC(vname, concrete); /* TODO: eternal=false? */

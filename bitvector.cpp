@@ -4,17 +4,18 @@
 
 using namespace clover;
 
-#define BINARY_OPERATOR(NAME, FN)                                      \
-	std::shared_ptr<BitVector>                                     \
-	NAME(std::shared_ptr<BitVector> other) {                       \
-		auto expr = builder-> FN (this->expr, other->expr);    \
-		                                                       \
-		auto bv = BitVector(builder, expr);                    \
-		return std::make_shared<BitVector>(bv);                \
+#define BINARY_OPERATOR(NAME, FN)                                 \
+	std::shared_ptr<BitVector>                                \
+	NAME(std::shared_ptr<BitVector> other)                    \
+	{                                                         \
+		auto expr = builder->FN(this->expr, other->expr); \
+                                                                  \
+		auto bv = BitVector(builder, expr);               \
+		return std::make_shared<BitVector>(bv);           \
 	}
 
 BitVector::BitVector(klee::ExprBuilder *_builder, const klee::ref<klee::Expr> &_expr)
-		: expr(_expr), builder(_builder)
+    : expr(_expr), builder(_builder)
 {
 	return;
 }
@@ -60,7 +61,6 @@ BitVector::bnot(void)
 	auto bv = BitVector(builder, expr);
 	return std::make_shared<BitVector>(bv);
 }
-
 
 std::shared_ptr<BitVector>
 BitVector::extract(unsigned offset, klee::Expr::Width width)
