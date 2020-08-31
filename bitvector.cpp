@@ -88,3 +88,12 @@ BitVector::sext(klee::Expr::Width width)
 	auto bv = BitVector(builder, expr);
 	return std::make_shared<BitVector>(bv);
 }
+
+std::shared_ptr<BitVector>
+BitVector::zext(klee::Expr::Width width)
+{
+	auto expr = builder->ZExt(this->expr, width);
+
+	auto bv = BitVector(builder, expr);
+	return std::make_shared<BitVector>(bv);
+}
