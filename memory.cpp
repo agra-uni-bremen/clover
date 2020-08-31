@@ -28,7 +28,7 @@ ConcolicMemory::load(Addr addr, unsigned bytesize)
 		if (!result) {
 			result = byte;
 		} else {
-			result = result->concat(byte);
+			result = byte->concat(result);
 		}
 	}
 
