@@ -118,7 +118,7 @@ ExecutionContext::getSymbolic(Address addr, size_t len)
 		if (!result) {
 			result = symbyte;
 		} else {
-			result = result->concat(symbyte);
+			result = symbyte->concat(result);
 		}
 	}
 
