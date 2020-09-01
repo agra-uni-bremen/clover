@@ -4,23 +4,13 @@
 
 using namespace clover;
 
-#define BINARY_OPERATOR(NAME, FN)                                 \
-	std::shared_ptr<BitVector>                                \
-	NAME(std::shared_ptr<BitVector> other)                    \
-	{                                                         \
-		auto expr = builder->FN(this->expr, other->expr); \
-                                                                  \
-		auto bv = BitVector(builder, expr);               \
-		return std::make_shared<BitVector>(bv);           \
-	}
-
-BitVector::BitVector(klee::ExprBuilder *_builder, const klee::ref<klee::Expr> &_expr)
-    : expr(_expr), builder(_builder)
+BitVector::BitVector(const klee::ref<klee::Expr> &_expr)
+    : expr(_expr)
 {
 	return;
 }
 
-BitVector::BitVector(klee::ExprBuilder *_builder, IntValue value)
+BitVector::BitVector(IntValue value)
 {
 	size_t bytesize, bitsize;
 
@@ -28,12 +18,10 @@ BitVector::BitVector(klee::ExprBuilder *_builder, IntValue value)
 	bitsize = bytesize * 8;
 
 	uint64_t exprValue = intToUint(value);
-
 	this->expr = klee::ConstantExpr::create(exprValue, (unsigned)bitsize);
-	this->builder = _builder;
 }
 
-BitVector::BitVector(klee::ExprBuilder *_builder, const klee::Array *array)
+BitVector::BitVector(const klee::Array *array)
 {
 	unsigned bitsize;
 
@@ -43,57 +31,4 @@ BitVector::BitVector(klee::ExprBuilder *_builder, const klee::Array *array)
 	bitsize = array->getSize() * 8;
 
 	this->expr = klee::Expr::createTempRead(array, bitsize);
-	this->builder = _builder;
-}
-
-BINARY_OPERATOR(BitVector::eq, Eq)
-BINARY_OPERATOR(BitVector::ne, Ne)
-BINARY_OPERATOR(BitVector::lshl, Shl)
-BINARY_OPERATOR(BitVector::lshr, LShr)
-BINARY_OPERATOR(BitVector::ashr, AShr)
-BINARY_OPERATOR(BitVector::add, Add)
-BINARY_OPERATOR(BitVector::sub, Sub)
-BINARY_OPERATOR(BitVector::slt, Slt)
-BINARY_OPERATOR(BitVector::sge, Sge)
-BINARY_OPERATOR(BitVector::ult, Ult)
-BINARY_OPERATOR(BitVector::uge, Uge)
-BINARY_OPERATOR(BitVector::band, And)
-BINARY_OPERATOR(BitVector::bor, Or)
-BINARY_OPERATOR(BitVector::bxor, Xor)
-BINARY_OPERATOR(BitVector::concat, Concat)
-
-std::shared_ptr<BitVector>
-BitVector::bnot(void)
-{
-	auto expr = builder->Not(this->expr);
-
-	auto bv = BitVector(builder, expr);
-	return std::make_shared<BitVector>(bv);
-}
-
-std::shared_ptr<BitVector>
-BitVector::extract(unsigned offset, klee::Expr::Width width)
-{
-	auto expr = builder->Extract(this->expr, offset, width);
-
-	auto bv = BitVector(builder, expr);
-	return std::make_shared<BitVector>(bv);
-}
-
-std::shared_ptr<BitVector>
-BitVector::sext(klee::Expr::Width width)
-{
-	auto expr = builder->SExt(this->expr, width);
-
-	auto bv = BitVector(builder, expr);
-	return std::make_shared<BitVector>(bv);
-}
-
-std::shared_ptr<BitVector>
-BitVector::zext(klee::Expr::Width width)
-{
-	auto expr = builder->ZExt(this->expr, width);
-
-	auto bv = BitVector(builder, expr);
-	return std::make_shared<BitVector>(bv);
 }

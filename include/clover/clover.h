@@ -23,33 +23,12 @@ typedef std::variant<uint8_t, uint32_t> IntValue;
 class BitVector {
 private:
 	klee::ref<klee::Expr> expr;
-	klee::ExprBuilder *builder = NULL;
 
-	BitVector(klee::ExprBuilder *_builder, const klee::ref<klee::Expr> &expr);
-	BitVector(klee::ExprBuilder *_builder, IntValue value);
-	BitVector(klee::ExprBuilder *_builder, const klee::Array *array);
+	BitVector(const klee::ref<klee::Expr> &expr);
+	BitVector(IntValue value);
+	BitVector(const klee::Array *array);
 
-public:
-	std::shared_ptr<BitVector> eq(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> ne(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> lshl(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> lshr(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> ashr(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> add(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> sub(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> slt(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> sge(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> ult(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> uge(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> band(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> bor(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> bxor(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> concat(std::shared_ptr<BitVector> other);
-	std::shared_ptr<BitVector> bnot(void);
-	std::shared_ptr<BitVector> extract(unsigned offset, klee::Expr::Width width);
-	std::shared_ptr<BitVector> sext(klee::Expr::Width width);
-	std::shared_ptr<BitVector> zext(klee::Expr::Width width);
-
+	friend class ConcolicValue;
 	friend class Solver;
 	friend class Trace;
 };
@@ -80,7 +59,11 @@ public:
 	std::shared_ptr<ConcolicValue> zext(klee::Expr::Width width);
 
 private:
-	ConcolicValue(std::shared_ptr<BitVector> _concrete, std::optional<std::shared_ptr<BitVector>> _symbolic = std::nullopt);
+	klee::ExprBuilder *builder = NULL;
+
+	ConcolicValue(klee::ExprBuilder *_builder,
+	              std::shared_ptr<BitVector> _concrete,
+	              std::optional<std::shared_ptr<BitVector>> _symbolic = std::nullopt);
 
 	/* The solver acts as a factory for ConcolicValue */
 	friend class Solver;
