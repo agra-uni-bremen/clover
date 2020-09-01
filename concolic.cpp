@@ -28,6 +28,14 @@ ConcolicValue::ConcolicValue(klee::ExprBuilder *_builder, std::shared_ptr<BitVec
 	return;
 }
 
+unsigned
+ConcolicValue::getWidth(void)
+{
+	if (symbolic.has_value())
+		assert(concrete->expr->getWidth() == (*symbolic)->expr->getWidth());
+	return concrete->expr->getWidth();
+}
+
 BINARY_OPERATOR(ConcolicValue::eq, Eq)
 BINARY_OPERATOR(ConcolicValue::ne, Ne)
 BINARY_OPERATOR(ConcolicValue::lshl, Shl)

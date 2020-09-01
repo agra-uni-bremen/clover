@@ -38,6 +38,8 @@ public:
 	std::shared_ptr<BitVector> concrete;
 	std::optional<std::shared_ptr<BitVector>> symbolic;
 
+	unsigned getWidth(void);
+
 	std::shared_ptr<ConcolicValue> eq(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> ne(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> lshl(std::shared_ptr<ConcolicValue> other);
