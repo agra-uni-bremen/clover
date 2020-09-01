@@ -45,10 +45,12 @@ ConcolicMemory::load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize)
 void
 ConcolicMemory::store(Addr addr, std::shared_ptr<ConcolicValue> value, unsigned bytesize)
 {
-	auto extended = value->zext(bytesize * 8);
+	if (value->getWidth() < bytesize * 8)
+		value = value->zext(bytesize * 8);
+
 	for (size_t off = 0; off < bytesize; off++) {
 		// Extract expression works on bit indicies, not bytes.
-		data[addr + off] = extended->extract(off * 8, klee::Expr::Int8);
+		data[addr + off] = value->extract(off * 8, klee::Expr::Int8);
 	}
 }
 
