@@ -31,6 +31,12 @@ Solver::Solver(klee::Solver *_solver)
 	return;
 }
 
+Solver::~Solver(void)
+{
+	delete this->solver;
+	delete this->builder;
+}
+
 std::optional<klee::Assignment>
 Solver::getAssignment(const klee::Query &query)
 {

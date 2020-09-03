@@ -79,6 +79,8 @@ private:
 
 public:
 	Solver(klee::Solver *_solver = NULL);
+	~Solver(void);
+
 	std::optional<klee::Assignment> getAssignment(const klee::Query &query);
 
 	bool eval(const klee::Query &query);
