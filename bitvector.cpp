@@ -32,3 +32,11 @@ BitVector::BitVector(const klee::Array *array)
 
 	this->expr = klee::Expr::createTempRead(array, bitsize);
 }
+
+std::shared_ptr<BitVector>
+BitVector::negate(void)
+{
+	// Copied from klee::Query::negateExpr()
+	auto expr = klee::Expr::createIsZero(this->expr);
+	return std::make_shared<BitVector>(BitVector(expr));
+}
