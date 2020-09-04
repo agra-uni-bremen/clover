@@ -44,13 +44,6 @@ ExecutionContext::ExecutionContext(Solver &_solver)
 	return;
 }
 
-void
-ExecutionContext::reset(void)
-{
-	registers.clear();
-	memory.clear();
-}
-
 bool
 ExecutionContext::hasNewPath(Trace &trace)
 {
