@@ -181,6 +181,8 @@ public:
 	typedef uint32_t Address;
 
 	ExecutionContext(Solver &_solver);
+
+	void reset(void);
 	bool hasNewPath(Trace &trace);
 
 	std::shared_ptr<ConcolicValue> getSymbolic(size_t reg);
