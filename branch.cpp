@@ -30,14 +30,14 @@ Trace::Branch::getRandomPath(Path &path)
 	if (this->isPlaceholder())
 		return false;
 
-	// Second part of pair is modified by reference later
+	// Second part of pair is modified by index later
 	path.push_back(std::make_pair(this->bv, false));
-	PathElement &pair = path.back();
+	size_t idx = path.size() - 1;
 
 	/* XXX: This prefers node in the upper tree */
 	if (!wasNegated && (!this->true_branch || !this->false_branch)) {
-		pair.second = (this->true_branch != nullptr);
-		if (pair.second)
+		path[idx].second = (this->true_branch != nullptr);
+		if (path[idx].second)
 			assert(this->false_branch == nullptr);
 
 		wasNegated = true;
@@ -48,18 +48,18 @@ Trace::Branch::getRandomPath(Path &path)
 	int random = rand();
 	if (random % 2 == 0) {
 		if (CHECK_BRANCH(true_branch, path)) {
-			pair.second = true;
+			path[idx].second = true;
 			return true;
 		} else if (CHECK_BRANCH(false_branch, path)) {
-			pair.second = false;
+			path[idx].second = false;
 			return true;
 		}
 	} else {
 		if (CHECK_BRANCH(false_branch, path)) {
-			pair.second = false;
+			path[idx].second = false;
 			return true;
 		} else if (CHECK_BRANCH(true_branch, path)) {
-			pair.second = true;
+			path[idx].second = true;
 			return true;
 		}
 	}
