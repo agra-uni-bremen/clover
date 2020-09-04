@@ -7,8 +7,6 @@
 
 using namespace clover;
 
-/* TODO: Add reset method to clear registers and memory */
-
 static std::optional<size_t>
 parseRegister(std::string name)
 {
