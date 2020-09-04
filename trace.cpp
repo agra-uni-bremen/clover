@@ -54,10 +54,17 @@ Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 	auto cm = klee::ConstraintManager(cs);
 
 	size_t i;
-	for (i = 0; i < path.size() - 1; i++)
-		cm.addConstraint(path.at(i)->expr);
+	for (i = 0; i < path.size() - 1; i++) {
+		auto bv = path.at(i).first;
+		auto cond = path.at(i).second;
 
-	auto bv = path.at(i);
+		// Adjust branch condition according to the path we are
+		// taking (i.e. true or false branch), negate if false.
+		auto bvcond = (cond) ? bv : bv->negate();
+		cm.addConstraint(bvcond->expr);
+	}
+
+	auto bv = path.at(i).first;
 	auto expr = cm.simplifyExpr(cs, bv->expr);
 
 	// XXX: Can we extract the constraints from cm instead?
@@ -68,16 +75,17 @@ std::optional<klee::Assignment>
 Trace::findNewPath(klee::ConstraintSet &cs)
 {
 	Branch::Path path;
-	bool wastrue;
 
-	if (!pathCondsRoot->getRandomPath(path, wastrue))
+	if (!pathCondsRoot->getRandomPath(path))
 		return std::nullopt;
 	auto base_query = getQuery(cs, path);
 
-	// If the branch condition was true in a previous run, we are
-	// looking for an assignment so that it becomes false. If it was
-	// false, we are looking for an assignment so that it becomes true.
-	auto query = (wastrue) ? base_query.negateExpr() : base_query;
+	// If the leaf branch condition was true in a previous run, we
+	// are looking for an assignment so that it becomes false. If it
+	// was false, we are looking for an assignment so that it
+	// becomes true.
+	auto leaf = path.at(path.size() - 1);
+	auto query = (leaf.second) ? base_query.negateExpr() : base_query;
 
 	auto assign = solver.getAssignment(query);
 	if (!assign.has_value())

@@ -135,7 +135,8 @@ class Trace {
 private:
 	class Branch {
 	public:
-		typedef std::vector<std::shared_ptr<BitVector>> Path;
+		typedef std::pair<std::shared_ptr<BitVector>, bool> PathElement;
+		typedef std::vector<PathElement> Path;
 
 		std::shared_ptr<BitVector> bv;
 		bool wasNegated; /* Don't negate nodes twice (could be unsat) */
@@ -148,9 +149,9 @@ private:
 
 		/* Returns seemingly random path to a node in the tree
 		 * for which either the false or the true branch wasn't
-		 * taken yet (as indicated by wastrue). If no such node
-		 * exists, false is returned. */
-		bool getRandomPath(Path &path, bool &wastrue);
+		 * attempted to be taken yet. If no such node exists,
+		 * false is returned. */
+		bool getRandomPath(Path &path);
 	};
 
 	Solver &solver;

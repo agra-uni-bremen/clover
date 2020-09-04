@@ -25,16 +25,19 @@ Trace::Branch::isPlaceholder(void)
 }
 
 bool
-Trace::Branch::getRandomPath(Path &path, bool &wastrue)
+Trace::Branch::getRandomPath(Path &path)
 {
 	if (this->isPlaceholder())
 		return false;
-	path.push_back(this->bv);
+
+	// Second part of pair is modified by reference later
+	PathElement pair = std::make_pair(this->bv, false);
+	path.push_back(pair);
 
 	/* XXX: This prefers node in the upper tree */
 	if (!wasNegated && (!this->true_branch || !this->false_branch)) {
-		wastrue = (this->true_branch != nullptr);
-		if (wastrue)
+		pair.second = (this->true_branch != nullptr);
+		if (pair.second)
 			assert(this->false_branch == nullptr);
 
 		wasNegated = true;
@@ -44,13 +47,21 @@ Trace::Branch::getRandomPath(Path &path, bool &wastrue)
 	/* Randomly traverse true or false branch first */
 	int random = rand();
 	if (random % 2 == 0) {
-		if (CHECK_BRANCH(true_branch, path, wastrue) ||
-		    CHECK_BRANCH(false_branch, path, wastrue))
+		if (CHECK_BRANCH(true_branch, path)) {
+			pair.second = true;
 			return true;
+		} else if (CHECK_BRANCH(false_branch, path)) {
+			pair.second = false;
+			return true;
+		}
 	} else {
-		if (CHECK_BRANCH(false_branch, path, wastrue) ||
-		    CHECK_BRANCH(true_branch, path, wastrue))
+		if (CHECK_BRANCH(false_branch, path)) {
+			pair.second = false;
 			return true;
+		} else if (CHECK_BRANCH(true_branch, path)) {
+			pair.second = true;
+			return true;
+		}
 	}
 
 	path.pop_back(); // node is not on path
