@@ -31,8 +31,8 @@ Trace::Branch::getRandomPath(Path &path)
 		return false;
 
 	// Second part of pair is modified by reference later
-	PathElement pair = std::make_pair(this->bv, false);
-	path.push_back(pair);
+	path.push_back(std::make_pair(this->bv, false));
+	PathElement &pair = path.back();
 
 	/* XXX: This prefers node in the upper tree */
 	if (!wasNegated && (!this->true_branch || !this->false_branch)) {
