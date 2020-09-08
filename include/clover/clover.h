@@ -176,12 +176,12 @@ public:
 
 class ExecutionContext {
 private:
-	std::map<size_t, IntValue> registers;
-	std::map<size_t, IntValue> memory;
+	std::unordered_map<size_t, IntValue> registers;
+	std::unordered_map<size_t, IntValue> memory;
 
 	Solver &solver;
 
-	IntValue findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key);
+	IntValue findRemoveOrRandom(std::unordered_map<size_t, IntValue> &map, size_t key);
 
 public:
 	typedef uint32_t Address;

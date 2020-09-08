@@ -74,7 +74,7 @@ ExecutionContext::hasNewPath(Trace &trace)
 }
 
 IntValue
-ExecutionContext::findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key)
+ExecutionContext::findRemoveOrRandom(std::unordered_map<size_t, IntValue> &map, size_t key)
 {
 	IntValue concrete;
 
