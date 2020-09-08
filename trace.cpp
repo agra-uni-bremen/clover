@@ -74,23 +74,25 @@ Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 std::optional<klee::Assignment>
 Trace::findNewPath(klee::ConstraintSet &cs)
 {
-	Branch::Path path;
+	std::optional<klee::Assignment> assign;
 
-	if (!pathCondsRoot->getRandomPath(path))
-		return std::nullopt;
-	auto base_query = getQuery(cs, path);
+	do {
+		Branch::Path path;
+		if (!pathCondsRoot->getRandomPath(path))
+			return std::nullopt; /* all branches exhausted */
+		auto base_query = getQuery(cs, path);
 
-	// If the leaf branch condition was true in a previous run, we
-	// are looking for an assignment so that it becomes false. If it
-	// was false, we are looking for an assignment so that it
-	// becomes true.
-	auto leaf = path.at(path.size() - 1);
-	auto query = (leaf.second) ? base_query.negateExpr() : base_query;
+		// If the leaf branch condition was true in a previous run, we
+		// are looking for an assignment so that it becomes false. If it
+		// was false, we are looking for an assignment so that it
+		// becomes true.
+		auto leaf = path.at(path.size() - 1);
+		auto query = (leaf.second) ? base_query.negateExpr() : base_query;
 
-	auto assign = solver.getAssignment(query);
-	if (!assign.has_value())
-		return std::nullopt; /* unsat */
+		assign = solver.getAssignment(query);
+	} while (!assign.has_value()); /* loop until we found a sat assignment */
 
+	assert(assign.has_value());
 	return assign;
 }
 
