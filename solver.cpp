@@ -86,13 +86,19 @@ Solver::eval(std::shared_ptr<BitVector> bv)
 }
 
 std::shared_ptr<ConcolicValue>
-Solver::BVC(std::optional<std::string> name, IntValue value)
+Solver::BVC(std::optional<std::string> name, IntValue value, bool eternal)
 {
 	auto concrete = std::make_shared<BitVector>(BitVector(value));
 	if (!name.has_value()) {
 		auto concolic = ConcolicValue(builder, concrete);
 		return std::make_shared<ConcolicValue>(concolic);
 	}
+
+	// The idea of eternal symbolic values was copied from angr. If
+	// a variable is not eternalan incrementing counter will be
+	// appended to the key to make the variable name unique.
+	if (!eternal)
+		(*name).append(std::to_string(varCounter++));
 
 	auto array = array_cache.CreateArray(*name, intByteSize(value));
 	auto symbolic = std::make_shared<BitVector>(BitVector(array));
