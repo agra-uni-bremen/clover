@@ -203,6 +203,13 @@ public:
 	ExecutionContext(Solver &_solver);
 	bool hasNewPath(Trace &trace);
 
+	template <typename T>
+	std::shared_ptr<ConcolicValue> getSymbolic(std::string name)
+	{
+		IntValue concrete = findRemoveOrRandom<T>(name);
+		return solver.BVC(name, concrete);
+	}
+
 	std::shared_ptr<ConcolicValue> getSymbolic(size_t reg);
 	std::shared_ptr<ConcolicValue> getSymbolic(Address addr, size_t len);
 };
