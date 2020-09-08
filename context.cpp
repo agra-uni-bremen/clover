@@ -73,26 +73,10 @@ ExecutionContext::hasNewPath(Trace &trace)
 	return true;
 }
 
-IntValue
-ExecutionContext::findRemoveOrRandom(std::unordered_map<size_t, IntValue> &map, size_t key)
-{
-	IntValue concrete;
-
-	auto iter = map.find(key);
-	if (iter != map.end()) {
-		concrete = (*iter).second;
-		map.erase(iter);
-	} else {
-		concrete = (uint32_t)rand();
-	}
-
-	return concrete;
-}
-
 std::shared_ptr<ConcolicValue>
 ExecutionContext::getSymbolic(size_t reg)
 {
-	IntValue concrete = findRemoveOrRandom(registers, reg);
+	IntValue concrete = findRemoveOrRandom<uint32_t>(registers, reg);
 	return solver.BVC("x" + std::to_string(reg), concrete);
 }
 
@@ -110,9 +94,8 @@ ExecutionContext::getSymbolic(Address addr, size_t len)
 
 		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr) + "," + std::to_string(byte_size) + ">";
 
-		IntValue concrete = findRemoveOrRandom(memory, byte_addr);
-		uint8_t byte = (uint8_t)std::get<uint32_t>(concrete);
-		auto symbyte = solver.BVC(vname, byte); /* TODO: eternal=false? */
+		IntValue concrete = findRemoveOrRandom<uint8_t>(memory, byte_addr);
+		auto symbyte = solver.BVC(vname, concrete); /* TODO: eternal=false? */
 
 		if (!result) {
 			result = symbyte;

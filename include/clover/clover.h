@@ -181,7 +181,22 @@ private:
 
 	Solver &solver;
 
-	IntValue findRemoveOrRandom(std::unordered_map<size_t, IntValue> &map, size_t key);
+	template <typename T>
+	IntValue findRemoveOrRandom(std::unordered_map<size_t, IntValue> &map, size_t key)
+	{
+		IntValue concrete;
+
+		auto iter = map.find(key);
+		if (iter != map.end()) {
+			concrete = (*iter).second;
+			assert(std::get_if<T>(&concrete) != nullptr);
+			map.erase(iter);
+		} else {
+			concrete = (T)rand();
+		}
+
+		return concrete;
+	}
 
 public:
 	typedef uint32_t Address;
