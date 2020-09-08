@@ -176,21 +176,20 @@ public:
 
 class ExecutionContext {
 private:
-	std::unordered_map<size_t, IntValue> registers;
-	std::unordered_map<size_t, IntValue> memory;
+	std::unordered_map<std::string, IntValue> names;
 
 	Solver &solver;
 
 	template <typename T>
-	IntValue findRemoveOrRandom(std::unordered_map<size_t, IntValue> &map, size_t key)
+	IntValue findRemoveOrRandom(std::string name)
 	{
 		IntValue concrete;
 
-		auto iter = map.find(key);
-		if (iter != map.end()) {
+		auto iter = names.find(name);
+		if (iter != names.end()) {
 			concrete = (*iter).second;
 			assert(std::get_if<T>(&concrete) != nullptr);
-			map.erase(iter);
+			names.erase(iter);
 		} else {
 			concrete = (T)rand();
 		}

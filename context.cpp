@@ -7,36 +7,6 @@
 
 using namespace clover;
 
-static std::optional<size_t>
-parseRegister(std::string name)
-{
-	if (name.length() < 2 || name.at(0) != 'x')
-		return std::nullopt;
-
-	auto idx = std::stoul(name.substr(1));
-	return idx;
-}
-
-static std::optional<std::pair<ExecutionContext::Address, size_t>>
-parseMemory(std::string name)
-{
-	std::regex re("memory<(.*),(.*)>");
-
-	std::smatch match;
-	if (regex_search(name, match, re)) {
-		if (match.size() != 3) /* match includes the entire string */
-			return std::nullopt;
-
-		auto addr = std::stoul(match[1].str());
-		auto size = std::stoul(match[2].str());
-
-		assert(size == 1); /* only byte sizes supported currently */
-		return std::make_pair((ExecutionContext::Address)addr, (size_t)size);
-	}
-
-	return std::nullopt;
-}
-
 ExecutionContext::ExecutionContext(Solver &_solver)
     : solver(_solver)
 {
@@ -56,19 +26,7 @@ ExecutionContext::hasNewPath(Trace &trace)
 		std::string name = assign.first;
 		IntValue value = assign.second;
 
-		auto ridx = parseRegister(name);
-		if (ridx.has_value()) {
-			registers[*ridx] = value;
-		} else { /* Either register OR memory */
-			auto mem = parseMemory(name);
-			assert(mem.has_value());
-
-			auto addr = (*mem).first;
-			auto size = (*mem).second;
-
-			assert(size == 1);
-			memory[addr] = value;
-		}
+		names[name] = value;
 	}
 
 	return true;
@@ -77,8 +35,10 @@ ExecutionContext::hasNewPath(Trace &trace)
 std::shared_ptr<ConcolicValue>
 ExecutionContext::getSymbolic(size_t reg)
 {
-	IntValue concrete = findRemoveOrRandom<uint32_t>(registers, reg);
-	return solver.BVC("x" + std::to_string(reg), concrete);
+	std::string name = "x" + std::to_string(reg);
+
+	IntValue concrete = findRemoveOrRandom<uint32_t>(name);
+	return solver.BVC(name, concrete);
 }
 
 /* TODO: Possible optimization: Assume that memory passed to this
@@ -91,11 +51,9 @@ ExecutionContext::getSymbolic(Address addr, size_t len)
 	std::shared_ptr<ConcolicValue> result = nullptr;
 	for (size_t i = 0; i < len; i++) {
 		Address byte_addr = addr + i;
-		unsigned byte_size = 1;
+		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr) + ">";
 
-		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr) + "," + std::to_string(byte_size) + ">";
-
-		IntValue concrete = findRemoveOrRandom<uint8_t>(memory, byte_addr);
+		IntValue concrete = findRemoveOrRandom<uint8_t>(vname);
 		auto symbyte = solver.BVC(vname, concrete); /* TODO: eternal=false? */
 
 		if (!result) {
