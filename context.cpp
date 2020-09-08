@@ -30,6 +30,7 @@ parseMemory(std::string name)
 		auto addr = std::stoul(match[1].str());
 		auto size = std::stoul(match[2].str());
 
+		assert(size == 1); /* only byte sizes supported currently */
 		return std::make_pair((ExecutionContext::Address)addr, (size_t)size);
 	}
 
