@@ -26,6 +26,7 @@ ExecutionContext::hasNewPath(Trace &trace)
 		std::string name = assign.first;
 		IntValue value = assign.second;
 
+		/* Cache value for next invocation of getSymbolic() */
 		names[name] = value;
 	}
 
