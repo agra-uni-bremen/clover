@@ -111,7 +111,8 @@ ExecutionContext::getSymbolic(Address addr, size_t len)
 		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr) + "," + std::to_string(byte_size) + ">";
 
 		IntValue concrete = findRemoveOrRandom(memory, byte_addr);
-		auto symbyte = solver.BVC(vname, concrete); /* TODO: eternal=false? */
+		uint8_t byte = (uint8_t)std::get<uint32_t>(concrete);
+		auto symbyte = solver.BVC(vname, byte); /* TODO: eternal=false? */
 
 		if (!result) {
 			result = symbyte;
