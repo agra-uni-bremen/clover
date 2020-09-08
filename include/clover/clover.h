@@ -79,9 +79,6 @@ private:
 	klee::ArrayCache array_cache;
 	klee::ExprBuilder *builder = NULL;
 
-	/* Counter for non-eternal array names */
-	size_t varCounter = 0;
-
 public:
 	Solver(klee::Solver *_solver = NULL);
 	~Solver(void);
@@ -91,7 +88,7 @@ public:
 	bool eval(const klee::Query &query);
 	bool eval(std::shared_ptr<BitVector> bv);
 
-	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value, bool eternal = true);
+	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 
 	template <typename T>
 	T evalValue(const klee::Query &query)
