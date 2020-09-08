@@ -64,8 +64,8 @@ Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 
 		// Adding constant unsatisfiable constraints causes a
 		// failed assert in addConstraints, check these explicitly.
-		auto expr = bvcond->expr;
-		if (expr->getKind() == klee::Expr::Constant && !expr->isTrue())
+		auto expr = cm.simplifyExpr(cs, bvcond->expr);
+		if (expr->getKind() == klee::Expr::Constant && !cast<klee::ConstantExpr>(expr)->isTrue())
 			return std::nullopt;
 		cm.addConstraint(expr);
 	}
