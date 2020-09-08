@@ -159,7 +159,7 @@ private:
 	std::shared_ptr<Branch> pathCondsRoot;
 	std::shared_ptr<Branch> pathCondsCurrent;
 
-	klee::Query getQuery(klee::ConstraintSet &cs, Branch::Path &path);
+	std::optional<klee::Query> getQuery(klee::ConstraintSet &cs, Branch::Path &path);
 
 public:
 	Trace(Solver &_solver);
