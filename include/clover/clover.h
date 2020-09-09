@@ -79,9 +79,6 @@ private:
 	klee::ArrayCache array_cache;
 	klee::ExprBuilder *builder = NULL;
 
-	/* Counter for non-eternal array names */
-	size_t varCounter = 0;
-
 public:
 	Solver(klee::Solver *_solver = NULL);
 	~Solver(void);
@@ -91,7 +88,7 @@ public:
 	bool eval(const klee::Query &query);
 	bool eval(std::shared_ptr<BitVector> bv);
 
-	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value, bool eternal = true);
+	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 
 	template <typename T>
 	T evalValue(const klee::Query &query)
@@ -162,7 +159,7 @@ private:
 	std::shared_ptr<Branch> pathCondsRoot;
 	std::shared_ptr<Branch> pathCondsCurrent;
 
-	klee::Query getQuery(klee::ConstraintSet &cs, Branch::Path &path);
+	std::optional<klee::Query> getQuery(klee::ConstraintSet &cs, Branch::Path &path);
 
 public:
 	Trace(Solver &_solver);
@@ -176,21 +173,33 @@ public:
 
 class ExecutionContext {
 private:
-	std::map<size_t, IntValue> registers;
-	std::map<size_t, IntValue> memory;
+	std::unordered_map<std::string, IntValue> names;
 
 	Solver &solver;
 
-	IntValue findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key);
+	template <typename T>
+	IntValue findRemoveOrRandom(std::string name)
+	{
+		IntValue concrete;
+
+		auto iter = names.find(name);
+		if (iter != names.end()) {
+			concrete = (*iter).second;
+			assert(std::get_if<T>(&concrete) != nullptr);
+			names.erase(iter);
+		} else {
+			concrete = (T)rand();
+		}
+
+		return concrete;
+	}
 
 public:
-	typedef uint32_t Address;
-
 	ExecutionContext(Solver &_solver);
 	bool hasNewPath(Trace &trace);
 
-	std::shared_ptr<ConcolicValue> getSymbolic(size_t reg);
-	std::shared_ptr<ConcolicValue> getSymbolic(Address addr, size_t len);
+	std::shared_ptr<ConcolicValue> getSymbolicWord(std::string name);
+	std::shared_ptr<ConcolicValue> getSymbolicBytes(std::string name, size_t size);
 };
 
 }; // namespace clover

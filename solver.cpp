@@ -46,8 +46,16 @@ Solver::getAssignment(const klee::Query &query)
 
 	std::vector<const klee::Array *> objects;
 	klee::findSymbolicObjects(nq.expr, objects);
-	for (auto e : nq.constraints)
+	for (auto e : nq.constraints) {
 		klee::findSymbolicObjects(e, objects);
+	}
+
+	// Check if the is alwyas false (e.g. true due to the negation)
+	// and return if it is. Otherwise triggers an assert statement
+	// in the getAllIndependentConstraintsSets function.
+	auto ce = dyn_cast<klee::ConstantExpr>(nq.expr);
+	if (ce && ce->isTrue())
+		return std::nullopt;
 
 	std::vector<std::vector<unsigned char>> values;
 	if (!solver->getInitialValues(nq, objects, values))
@@ -86,19 +94,13 @@ Solver::eval(std::shared_ptr<BitVector> bv)
 }
 
 std::shared_ptr<ConcolicValue>
-Solver::BVC(std::optional<std::string> name, IntValue value, bool eternal)
+Solver::BVC(std::optional<std::string> name, IntValue value)
 {
 	auto concrete = std::make_shared<BitVector>(BitVector(value));
 	if (!name.has_value()) {
 		auto concolic = ConcolicValue(builder, concrete);
 		return std::make_shared<ConcolicValue>(concolic);
 	}
-
-	// The idea of eternal symbolic values was copied from angr. If
-	// a variable is not eternalan incrementing counter will be
-	// appended to the key to make the variable name unique.
-	if (!eternal)
-		(*name).append(std::to_string(varCounter++));
 
 	auto array = array_cache.CreateArray(*name, intByteSize(value));
 	auto symbolic = std::make_shared<BitVector>(BitVector(array));

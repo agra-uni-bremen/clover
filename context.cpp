@@ -7,35 +7,6 @@
 
 using namespace clover;
 
-static std::optional<size_t>
-parseRegister(std::string name)
-{
-	if (name.length() < 2 || name.at(0) != 'x')
-		return std::nullopt;
-
-	auto idx = std::stoul(name.substr(1));
-	return idx;
-}
-
-static std::optional<std::pair<ExecutionContext::Address, size_t>>
-parseMemory(std::string name)
-{
-	std::regex re("memory<(.*),(.*)>");
-
-	std::smatch match;
-	if (regex_search(name, match, re)) {
-		if (match.size() != 3) /* match includes the entire string */
-			return std::nullopt;
-
-		auto addr = std::stoul(match[1].str());
-		auto size = std::stoul(match[2].str());
-
-		return std::make_pair((ExecutionContext::Address)addr, (size_t)size);
-	}
-
-	return std::nullopt;
-}
-
 ExecutionContext::ExecutionContext(Solver &_solver)
     : solver(_solver)
 {
@@ -55,45 +26,18 @@ ExecutionContext::hasNewPath(Trace &trace)
 		std::string name = assign.first;
 		IntValue value = assign.second;
 
-		auto ridx = parseRegister(name);
-		if (ridx.has_value()) {
-			registers[*ridx] = value;
-		} else { /* Either register OR memory */
-			auto mem = parseMemory(name);
-			assert(mem.has_value());
-
-			auto addr = (*mem).first;
-			auto size = (*mem).second;
-
-			assert(size == 1);
-			memory[addr] = value;
-		}
+		/* Cache value for next invocation of getSymbolic() */
+		names[name] = value;
 	}
 
 	return true;
 }
 
-IntValue
-ExecutionContext::findRemoveOrRandom(std::map<size_t, IntValue> &map, size_t key)
-{
-	IntValue concrete;
-
-	auto iter = map.find(key);
-	if (iter != map.end()) {
-		concrete = (*iter).second;
-		map.erase(iter);
-	} else {
-		concrete = (uint32_t)rand();
-	}
-
-	return concrete;
-}
-
 std::shared_ptr<ConcolicValue>
-ExecutionContext::getSymbolic(size_t reg)
+ExecutionContext::getSymbolicWord(std::string name)
 {
-	IntValue concrete = findRemoveOrRandom(registers, reg);
-	return solver.BVC("x" + std::to_string(reg), concrete);
+	IntValue concrete = findRemoveOrRandom<uint32_t>(name);
+	return solver.BVC(name, concrete);
 }
 
 /* TODO: Possible optimization: Assume that memory passed to this
@@ -101,17 +45,15 @@ ExecutionContext::getSymbolic(size_t reg)
  * without splitting it into single bytes as this split is already
  * done by the ConcolicMemory::store function */
 std::shared_ptr<ConcolicValue>
-ExecutionContext::getSymbolic(Address addr, size_t len)
+ExecutionContext::getSymbolicBytes(std::string name, size_t size)
 {
 	std::shared_ptr<ConcolicValue> result = nullptr;
-	for (size_t i = 0; i < len; i++) {
-		Address byte_addr = addr + i;
-		unsigned byte_size = 1;
 
-		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr) + "," + std::to_string(byte_size) + ">";
+	for (size_t i = 0; i < size; i++) {
+		std::string bname = name + "byte" + std::to_string(i);
 
-		IntValue concrete = findRemoveOrRandom(memory, byte_addr);
-		auto symbyte = solver.BVC(vname, concrete); /* TODO: eternal=false? */
+		IntValue concrete = findRemoveOrRandom<uint8_t>(bname);
+		auto symbyte = solver.BVC(bname, concrete); /* TODO: eternal=false? */
 
 		if (!result) {
 			result = symbyte;
