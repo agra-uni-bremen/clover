@@ -195,20 +195,11 @@ private:
 	}
 
 public:
-	typedef uint32_t Address;
-
 	ExecutionContext(Solver &_solver);
 	bool hasNewPath(Trace &trace);
 
-	template <typename T>
-	std::shared_ptr<ConcolicValue> getSymbolic(std::string name)
-	{
-		IntValue concrete = findRemoveOrRandom<T>(name);
-		return solver.BVC(name, concrete);
-	}
-
-	std::shared_ptr<ConcolicValue> getSymbolic(size_t reg);
-	std::shared_ptr<ConcolicValue> getSymbolic(Address addr, size_t len);
+	std::shared_ptr<ConcolicValue> getSymbolicWord(std::string name);
+	std::shared_ptr<ConcolicValue> getSymbolicBytes(std::string name, size_t size);
 };
 
 }; // namespace clover

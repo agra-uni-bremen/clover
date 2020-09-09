@@ -34,10 +34,8 @@ ExecutionContext::hasNewPath(Trace &trace)
 }
 
 std::shared_ptr<ConcolicValue>
-ExecutionContext::getSymbolic(size_t reg)
+ExecutionContext::getSymbolicWord(std::string name)
 {
-	std::string name = "x" + std::to_string(reg);
-
 	IntValue concrete = findRemoveOrRandom<uint32_t>(name);
 	return solver.BVC(name, concrete);
 }
@@ -47,15 +45,15 @@ ExecutionContext::getSymbolic(size_t reg)
  * without splitting it into single bytes as this split is already
  * done by the ConcolicMemory::store function */
 std::shared_ptr<ConcolicValue>
-ExecutionContext::getSymbolic(Address addr, size_t len)
+ExecutionContext::getSymbolicBytes(std::string name, size_t size)
 {
 	std::shared_ptr<ConcolicValue> result = nullptr;
-	for (size_t i = 0; i < len; i++) {
-		Address byte_addr = addr + i;
-		std::string vname = std::string("memory") + "<" + std::to_string(byte_addr) + ">";
 
-		IntValue concrete = findRemoveOrRandom<uint8_t>(vname);
-		auto symbyte = solver.BVC(vname, concrete); /* TODO: eternal=false? */
+	for (size_t i = 0; i < size; i++) {
+		std::string bname = name + "byte" + std::to_string(i);
+
+		IntValue concrete = findRemoveOrRandom<uint8_t>(bname);
+		auto symbyte = solver.BVC(bname, concrete); /* TODO: eternal=false? */
 
 		if (!result) {
 			result = symbyte;
