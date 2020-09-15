@@ -62,12 +62,7 @@ Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 		// taking (i.e. true or false branch), negate if false.
 		auto bvcond = (cond) ? bv : bv->negate();
 
-		// Adding constant unsatisfiable constraints causes a
-		// failed assert in addConstraints, check these explicitly.
-		auto expr = cm.simplifyExpr(cs, bvcond->expr);
-		if (expr->getKind() == klee::Expr::Constant && !cast<klee::ConstantExpr>(expr)->isTrue())
-			return std::nullopt;
-		cm.addConstraint(expr);
+		cm.addConstraint(bvcond->expr);
 	}
 
 	auto bv = path.at(i).first;
