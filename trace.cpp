@@ -78,11 +78,13 @@ Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 }
 
 std::optional<klee::Assignment>
-Trace::findNewPath(klee::ConstraintSet &cs)
+Trace::findNewPath(void)
 {
 	std::optional<klee::Assignment> assign;
 
 	do {
+		klee::ConstraintSet cs;
+
 		Branch::Path path;
 		if (!pathCondsRoot->getRandomPath(path))
 			return std::nullopt; /* all branches exhausted */

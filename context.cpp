@@ -16,8 +16,7 @@ ExecutionContext::ExecutionContext(Solver &_solver)
 bool
 ExecutionContext::hasNewPath(Trace &trace)
 {
-	klee::ConstraintSet cs;
-	auto assign = trace.findNewPath(cs);
+	auto assign = trace.findNewPath();
 	if (!assign.has_value())
 		return false;
 
