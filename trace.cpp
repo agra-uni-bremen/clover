@@ -48,7 +48,7 @@ Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 	}
 }
 
-std::optional<klee::Query>
+klee::Query
 Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 {
 	auto cm = klee::ConstraintManager(cs);
@@ -84,15 +84,13 @@ Trace::findNewPath(void)
 		if (!pathCondsRoot->getRandomPath(path))
 			return std::nullopt; /* all branches exhausted */
 		auto base_query = getQuery(cs, path);
-		if (!base_query.has_value())
-			continue; /* unsatisfiable constraint */
 
 		// If the leaf branch condition was true in a previous run, we
 		// are looking for an assignment so that it becomes false. If it
 		// was false, we are looking for an assignment so that it
 		// becomes true.
 		auto leaf = path.at(path.size() - 1);
-		auto query = (leaf.second) ? (*base_query).negateExpr() : *base_query;
+		auto query = (leaf.second) ? base_query.negateExpr() : base_query;
 
 		assign = solver.getAssignment(query);
 	} while (!assign.has_value()); /* loop until we found a sat assignment */
