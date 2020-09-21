@@ -1,8 +1,8 @@
-set(LLVM_LIBS ${LLVM_AVAILABLE_LIBS})
+subdirs(klee)
 
 add_library(clover solver.cpp bitvector.cpp concolic.cpp trace.cpp
 	intval.cpp branch.cpp memory.cpp context.cpp testcase.cpp)
+set_property(TARGET clover PROPERTY CXX_STANDARD 17)
 target_include_directories(clover PUBLIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(clover PUBLIC
-	${KLEE_LIBS} ${Z3_LIBS} ${STP_LIBS} ${LLVM_LIBS} ZLIB::ZLIB)
+target_link_libraries(clover PUBLIC kleaverSolver)
