@@ -13,7 +13,7 @@ using namespace clover;
 Solver::Solver(klee::Solver *_solver)
 {
 	if (!_solver)
-		_solver = klee::createCoreSolver(klee::CoreSolverType::STP_SOLVER);
+		_solver = klee::createCoreSolver(klee::CoreSolverType::Z3_SOLVER);
 
 	// Create fancy solver chain based on given core solver.
 	// Taken from lib/Solver/ConstructSolverChain.cpp
