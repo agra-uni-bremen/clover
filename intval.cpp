@@ -16,8 +16,9 @@ intByteSize(IntValue v)
 		return sizeof(uint8_t);
 	else if (std::get_if<uint32_t>(&v) != nullptr)
 		return sizeof(uint32_t);
-	else
-		assert(0);
+
+	assert(0); /* unreachable */
+	return 0;
 }
 
 uint64_t

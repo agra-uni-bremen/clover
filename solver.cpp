@@ -82,6 +82,7 @@ Solver::eval(const klee::Query &query)
 	}
 
 	assert(0); /* unreachable */
+	return false;
 }
 
 bool
