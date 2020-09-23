@@ -110,6 +110,22 @@ Solver::BVC(std::optional<std::string> name, IntValue value)
 	return std::make_shared<ConcolicValue>(concolic);
 }
 
+std::shared_ptr<ConcolicValue>
+Solver::BVC(uint8_t *buf, size_t buflen)
+{
+	std::shared_ptr<ConcolicValue> result = nullptr;
+	for (size_t i = 0; i < buflen; i++) {
+		auto byte = BVC(std::nullopt, (uint8_t)buf[i]);
+		if (!result) {
+			result = byte;
+		} else {
+			result = byte->concat(result);
+		}
+	}
+
+	return result;
+}
+
 void
 Solver::BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t buflen)
 {

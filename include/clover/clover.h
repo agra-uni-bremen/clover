@@ -90,6 +90,9 @@ public:
 	bool eval(std::shared_ptr<BitVector> bv);
 
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
+
+	/* Methods for converting between concolic values and uint8_t buffers */
+	std::shared_ptr<ConcolicValue> BVC(uint8_t *buf, size_t buflen);
 	void BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t buflen);
 
 	template <typename T>
