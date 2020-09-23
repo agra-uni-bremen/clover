@@ -109,3 +109,16 @@ Solver::BVC(std::optional<std::string> name, IntValue value)
 	auto concolic = ConcolicValue(builder, concrete, symbolic);
 	return std::make_shared<ConcolicValue>(concolic);
 }
+
+void
+Solver::BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t buflen)
+{
+	if (value->getWidth() < buflen * 8)
+		value = value->zext(buflen * 8);
+
+	for (size_t i = 0; i < buflen; i++) {
+		// Extract expression works on bit indicies and bit sizes
+		auto byte = value->extract(i * 8, klee::Expr::Int8);
+		buf[i] = evalValue<uint8_t>(byte->concrete);
+	}
+}

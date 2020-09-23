@@ -90,6 +90,7 @@ public:
 	bool eval(std::shared_ptr<BitVector> bv);
 
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
+	void BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t buflen);
 
 	template <typename T>
 	T evalValue(const klee::Query &query)
