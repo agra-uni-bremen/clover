@@ -1,8 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include <regex>
-
 #include <clover/clover.h>
 
 using namespace clover;
