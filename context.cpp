@@ -14,7 +14,7 @@ ExecutionContext::ExecutionContext(Solver &_solver)
 }
 
 bool
-ExecutionContext::hasNewPath(Trace &trace)
+ExecutionContext::setupNewValues(Trace &trace)
 {
 	auto assign = trace.findNewPath();
 	if (!assign.has_value())

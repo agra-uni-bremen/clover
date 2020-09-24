@@ -201,7 +201,7 @@ private:
 
 public:
 	ExecutionContext(Solver &_solver);
-	bool hasNewPath(Trace &trace);
+	bool setupNewValues(Trace &trace);
 
 	std::shared_ptr<ConcolicValue> getSymbolicWord(std::string name);
 	std::shared_ptr<ConcolicValue> getSymbolicBytes(std::string name, size_t size);
