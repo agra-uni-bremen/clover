@@ -1,5 +1,6 @@
-#include <clover/clover.h>
+#include <iostream>
 
+#include <clover/clover.h>
 using namespace clover;
 
 ConcolicMemory::ConcolicMemory(Solver &_solver)
@@ -20,11 +21,16 @@ ConcolicMemory::load(Addr addr, unsigned bytesize)
 	std::shared_ptr<ConcolicValue> result = nullptr;
 	for (uint32_t off = 0; off < bytesize; off++) {
 		auto read_addr = addr + off;
-		if (!data.count(read_addr)) {
-			throw std::range_error("access to uninitialized memory"); // TODO
+
+		std::shared_ptr<ConcolicValue> byte;
+		if (data.count(read_addr)) {
+			byte = data.at(read_addr);
+		} else {
+			std::cerr << "WARNING: Uninitialized memory accessed at 0x"
+			          << std::hex << read_addr << " initializing with zero" << std::endl;
+			byte = solver.BVC(std::nullopt, (uint8_t)0);
 		}
 
-		auto byte = data.at(read_addr);
 		if (!result) {
 			result = byte;
 		} else {
