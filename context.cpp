@@ -27,6 +27,7 @@ ExecutionContext::setupNewValues(Trace &trace)
 		next_run[name] = value;
 	}
 
+	last_run.clear(); // Clear variable assignment of last run
 	return true;
 }
 

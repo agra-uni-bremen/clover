@@ -181,6 +181,9 @@ private:
 	// Variable assignment for next invocation of getSymbolic().
 	std::unordered_map<std::string, IntValue> next_run;
 
+	// Variable assignment for the last invocation of getSymbolic().
+	std::unordered_map<std::string, IntValue> last_run;
+
 	Solver &solver;
 
 	template <typename T>
@@ -197,6 +200,7 @@ private:
 			concrete = (T)rand();
 		}
 
+		last_run[name] = concrete;
 		return concrete;
 	}
 
