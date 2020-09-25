@@ -24,7 +24,7 @@ ExecutionContext::setupNewValues(Trace &trace)
 		IntValue value = assign.second;
 
 		/* Cache value for next invocation of getSymbolic() */
-		names[name] = value;
+		next_run[name] = value;
 	}
 
 	return true;

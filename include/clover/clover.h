@@ -178,7 +178,8 @@ public:
 
 class ExecutionContext {
 private:
-	std::unordered_map<std::string, IntValue> names;
+	// Variable assignment for next invocation of getSymbolic().
+	std::unordered_map<std::string, IntValue> next_run;
 
 	Solver &solver;
 
@@ -187,11 +188,11 @@ private:
 	{
 		IntValue concrete;
 
-		auto iter = names.find(name);
-		if (iter != names.end()) {
+		auto iter = next_run.find(name);
+		if (iter != next_run.end()) {
 			concrete = (*iter).second;
 			assert(std::get_if<T>(&concrete) != nullptr);
-			names.erase(iter);
+			next_run.erase(iter);
 		} else {
 			concrete = (T)rand();
 		}
