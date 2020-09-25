@@ -31,6 +31,16 @@ ExecutionContext::setupNewValues(Trace &trace)
 	return true;
 }
 
+void
+ExecutionContext::useOldValues(void)
+{
+	if (last_run.empty())
+		throw std::invalid_argument("assignment for last run is empty");
+
+	// Use variable assignment from last run for the next run.
+	next_run = last_run;
+}
+
 std::shared_ptr<ConcolicValue>
 ExecutionContext::getSymbolicWord(std::string name)
 {
