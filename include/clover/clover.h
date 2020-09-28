@@ -14,7 +14,6 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <unordered_map>
 #include <variant>
 
 namespace clover {
@@ -180,10 +179,10 @@ public:
 class ExecutionContext {
 private:
 	// Variable assignment for next invocation of getSymbolic().
-	std::unordered_map<std::string, IntValue> next_run;
+	ConcreteStore next_run;
 
 	// Variable assignment for the last invocation of getSymbolic().
-	std::unordered_map<std::string, IntValue> last_run;
+	ConcreteStore last_run;
 
 	Solver &solver;
 
