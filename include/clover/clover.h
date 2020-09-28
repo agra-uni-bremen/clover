@@ -206,6 +206,7 @@ private:
 
 public:
 	ExecutionContext(Solver &_solver);
+	ConcreteStore getPrevStore(void);
 
 	bool setupNewValues(ConcreteStore store);
 	bool setupNewValues(Trace &trace);

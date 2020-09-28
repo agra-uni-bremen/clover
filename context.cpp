@@ -11,6 +11,15 @@ ExecutionContext::ExecutionContext(Solver &_solver)
 	return;
 }
 
+ConcreteStore
+ExecutionContext::getPrevStore(void)
+{
+	if (last_run.empty())
+		throw std::invalid_argument("assignment for last run is empty");
+
+	return last_run;
+}
+
 bool
 ExecutionContext::setupNewValues(ConcreteStore store)
 {
