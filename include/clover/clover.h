@@ -213,6 +213,26 @@ public:
 	std::shared_ptr<ConcolicValue> getSymbolicBytes(std::string name, size_t size);
 };
 
+class TestCase {
+	class ParserError : public std::exception {
+		std::string fileName, msg;
+		size_t line;
+
+	public:
+		ParserError(std::string _fileName, size_t _line, std::string _msg)
+		    : fileName(_fileName), msg(_msg), line(_line){};
+
+		const char *what(void) const throw()
+		{
+			return (fileName + ":" + std::to_string(line) + ": " + msg).c_str();
+		}
+	};
+
+public:
+	static ConcreteStore fromFile(std::string fileName);
+	static void toFile(ConcreteStore store, std::string fileName);
+};
+
 }; // namespace clover
 
 #endif
