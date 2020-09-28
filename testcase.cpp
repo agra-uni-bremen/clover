@@ -2,6 +2,9 @@
 #include <iostream>
 #include <regex>
 
+#include <inttypes.h>
+#include <stdint.h>
+
 #include <clover/clover.h>
 using namespace clover;
 
@@ -11,16 +14,42 @@ typedef enum {
 	UINT32,
 } AssignType;
 
+#define PARSE_INT(STR, FMT, TYPE)                    \
+	{                                            \
+		TYPE v;                              \
+		int r = sscanf(STR, "%" FMT "", &v); \
+                                                     \
+		if (r == 1)                          \
+			return (TYPE)v;              \
+		else                                 \
+			return std::nullopt;         \
+	}
+
 static std::optional<IntValue>
 parseIntVal(AssignType type, std::string input)
 {
-	return (uint32_t)5; // TODO
+	switch (type) {
+	case UINT8:
+		PARSE_INT(input.c_str(), SCNu8, uint8_t);
+		break;
+	case UINT32:
+		PARSE_INT(input.c_str(), SCNu32, uint32_t);
+		break;
+	}
+
+	return std::nullopt;
 }
 
 static std::optional<AssignType>
 parseAssignType(std::string type)
 {
-	return UINT32; // TODO
+	if (type == "uint8_t") {
+		return UINT8;
+	} else if (type == "uint32_t") {
+		return UINT32;
+	} else {
+		return std::nullopt;
+	}
 }
 
 static Assignment
