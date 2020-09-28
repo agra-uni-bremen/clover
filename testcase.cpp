@@ -78,34 +78,28 @@ parseAssign(std::string assign)
 }
 
 ConcreteStore
-TestCase::fromFile(std::string fileName)
+TestCase::fromFile(std::string name, std::ifstream &stream)
 {
 	ConcreteStore assigns;
-
-	std::ifstream file(fileName);
-	if (!file.is_open()) {
-		throw std::runtime_error("could not open " + fileName);
-	}
 
 	std::string line;
 	size_t lineNum = 1;
 
-	while (std::getline(file, line)) {
+	while (std::getline(stream, line)) {
 		Assignment assign = parseAssign(line);
 		if (!assign.has_value()) {
-			throw TestCase::ParserError(fileName, lineNum, "invalid assignment");
+			throw TestCase::ParserError(name, lineNum, "invalid assignment");
 		}
 
 		assigns[std::get<0>(*assign)] = std::get<1>(*assign);
 		lineNum++;
 	}
 
-	file.close();
 	return assigns;
 }
 
 void
-TestCase::toFile(ConcreteStore store, std::string fileName)
+TestCase::toFile(ConcreteStore store, std::ofstream &stream)
 {
 	throw "not implemented";
 }

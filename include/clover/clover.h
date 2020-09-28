@@ -10,6 +10,7 @@
 #include <klee/Expr/ExprBuilder.h>
 #include <klee/Solver/Solver.h>
 
+#include <fstream>
 #include <map>
 #include <memory>
 #include <optional>
@@ -229,8 +230,8 @@ class TestCase {
 	};
 
 public:
-	static ConcreteStore fromFile(std::string fileName);
-	static void toFile(ConcreteStore store, std::string fileName);
+	static ConcreteStore fromFile(std::string name, std::ifstream &stream);
+	static void toFile(ConcreteStore store, std::ofstream &stream);
 };
 
 }; // namespace clover
