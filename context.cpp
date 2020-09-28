@@ -12,13 +12,8 @@ ExecutionContext::ExecutionContext(Solver &_solver)
 }
 
 bool
-ExecutionContext::setupNewValues(Trace &trace)
+ExecutionContext::setupNewValues(ConcreteStore store)
 {
-	auto assign = trace.findNewPath();
-	if (!assign.has_value())
-		return false;
-
-	auto store = trace.getStore(*assign);
 	for (auto assign : store) {
 		std::string name = assign.first;
 		IntValue value = assign.second;
@@ -31,14 +26,14 @@ ExecutionContext::setupNewValues(Trace &trace)
 	return true;
 }
 
-void
-ExecutionContext::useOldValues(void)
+bool
+ExecutionContext::setupNewValues(Trace &trace)
 {
-	if (last_run.empty())
-		throw std::invalid_argument("assignment for last run is empty");
+	auto assign = trace.findNewPath();
+	if (!assign.has_value())
+		return false;
 
-	// Use variable assignment from last run for the next run.
-	next_run = last_run;
+	return setupNewValues(trace.getStore(*assign));
 }
 
 std::shared_ptr<ConcolicValue>
