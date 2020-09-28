@@ -2,6 +2,7 @@
 #include <iostream>
 #include <regex>
 
+#include <assert.h>
 #include <inttypes.h>
 #include <stdint.h>
 
@@ -101,5 +102,19 @@ TestCase::fromFile(std::string name, std::ifstream &stream)
 void
 TestCase::toFile(ConcreteStore store, std::ofstream &stream)
 {
-	throw "not implemented";
+	for (auto assign : store) {
+		// Output variable name
+		stream << assign.first << "\t";
+
+		IntValue v = assign.second;
+		if (std::get_if<uint8_t>(&v)) {
+			stream << "uint8_t\t" << std::get<uint8_t>(v);
+		} else if (std::get_if<uint32_t>(&v)) {
+			stream << "uint32_t\t" << std::get<uint32_t>(v);
+		} else {
+			assert(0);
+		}
+
+		stream << std::endl;
+	}
 }
