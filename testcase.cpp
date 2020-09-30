@@ -9,7 +9,7 @@
 #include <clover/clover.h>
 using namespace clover;
 
-typedef std::optional<std::pair<std::string, IntValue>> Assignment;
+typedef std::pair<std::string, IntValue> Assignment;
 typedef enum {
 	UINT8,
 	UINT32,
@@ -53,7 +53,7 @@ parseAssignType(std::string type)
 	}
 }
 
-static Assignment
+static std::optional<Assignment>
 parseAssign(std::string assign)
 {
 	std::regex re("(..*)	(uint8_t|uint32_t)	([0-9][0-9]*)");
@@ -87,7 +87,7 @@ TestCase::fromFile(std::string name, std::ifstream &stream)
 	size_t lineNum = 1;
 
 	while (std::getline(stream, line)) {
-		Assignment assign = parseAssign(line);
+		std::optional<Assignment> assign = parseAssign(line);
 		if (!assign.has_value()) {
 			throw TestCase::ParserError(name, lineNum, "invalid assignment");
 		}
