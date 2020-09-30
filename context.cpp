@@ -14,10 +14,7 @@ ExecutionContext::ExecutionContext(Solver &_solver)
 ConcreteStore
 ExecutionContext::getPrevStore(void)
 {
-	if (last_run.empty())
-		throw std::invalid_argument("assignment for last run is empty");
-
-	return last_run;
+	return last_run; // Might be empty
 }
 
 bool
