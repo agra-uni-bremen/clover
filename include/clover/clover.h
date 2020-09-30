@@ -10,10 +10,10 @@
 #include <klee/Expr/ExprBuilder.h>
 #include <klee/Solver/Solver.h>
 
+#include <fstream>
 #include <map>
 #include <memory>
 #include <optional>
-#include <unordered_map>
 #include <variant>
 
 namespace clover {
@@ -179,10 +179,10 @@ public:
 class ExecutionContext {
 private:
 	// Variable assignment for next invocation of getSymbolic().
-	std::unordered_map<std::string, IntValue> next_run;
+	ConcreteStore next_run;
 
 	// Variable assignment for the last invocation of getSymbolic().
-	std::unordered_map<std::string, IntValue> last_run;
+	ConcreteStore last_run;
 
 	Solver &solver;
 
@@ -206,11 +206,33 @@ private:
 
 public:
 	ExecutionContext(Solver &_solver);
+	ConcreteStore getPrevStore(void);
+
+	bool setupNewValues(ConcreteStore store);
 	bool setupNewValues(Trace &trace);
-	void useOldValues(void);
 
 	std::shared_ptr<ConcolicValue> getSymbolicWord(std::string name);
 	std::shared_ptr<ConcolicValue> getSymbolicBytes(std::string name, size_t size);
+};
+
+class TestCase {
+	class ParserError : public std::exception {
+		std::string fileName, msg;
+		size_t line;
+
+	public:
+		ParserError(std::string _fileName, size_t _line, std::string _msg)
+		    : fileName(_fileName), msg(_msg), line(_line){};
+
+		const char *what(void) const throw()
+		{
+			return (fileName + ":" + std::to_string(line) + ": " + msg).c_str();
+		}
+	};
+
+public:
+	static ConcreteStore fromFile(std::string name, std::ifstream &stream);
+	static void toFile(ConcreteStore store, std::ofstream &stream);
 };
 
 }; // namespace clover
