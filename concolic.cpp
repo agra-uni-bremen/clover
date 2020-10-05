@@ -36,6 +36,15 @@ ConcolicValue::getWidth(void)
 	return concrete->expr->getWidth();
 }
 
+klee::ref<klee::Expr>
+ConcolicValue::toExpr(void)
+{
+	if (symbolic.has_value())
+		return (*symbolic)->expr;
+	else
+		return concrete->expr;
+}
+
 BINARY_OPERATOR(ConcolicValue::eq, Eq)
 BINARY_OPERATOR(ConcolicValue::ne, Ne)
 BINARY_OPERATOR(ConcolicValue::lshl, Shl)
