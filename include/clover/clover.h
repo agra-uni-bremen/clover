@@ -213,6 +213,7 @@ public:
 
 	std::shared_ptr<ConcolicValue> getSymbolicWord(std::string name);
 	std::shared_ptr<ConcolicValue> getSymbolicBytes(std::string name, size_t size);
+	std::shared_ptr<ConcolicValue> getSymbolicByte(std::string name);
 };
 
 class TestCase {

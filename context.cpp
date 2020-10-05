@@ -73,3 +73,9 @@ ExecutionContext::getSymbolicBytes(std::string name, size_t size)
 
 	return result;
 }
+
+std::shared_ptr<ConcolicValue>
+ExecutionContext::getSymbolicByte(std::string name)
+{
+	return getSymbolicBytes(name, 1);
+}
