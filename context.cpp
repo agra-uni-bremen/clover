@@ -60,9 +60,7 @@ ExecutionContext::getSymbolicBytes(std::string name, size_t size)
 
 	for (size_t i = 0; i < size; i++) {
 		std::string bname = name + ":byte" + std::to_string(i);
-
-		IntValue concrete = findRemoveOrRandom<uint8_t>(bname);
-		auto symbyte = solver.BVC(bname, concrete); /* TODO: eternal=false? */
+		auto symbyte = getSymbolicByte(bname);
 
 		if (!result) {
 			result = symbyte;
@@ -77,5 +75,6 @@ ExecutionContext::getSymbolicBytes(std::string name, size_t size)
 std::shared_ptr<ConcolicValue>
 ExecutionContext::getSymbolicByte(std::string name)
 {
-	return getSymbolicBytes(name, 1);
+	IntValue concrete = findRemoveOrRandom<uint8_t>(name);
+	return solver.BVC(name, concrete); /* TODO: eternal=false? */
 }
