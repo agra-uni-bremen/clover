@@ -62,6 +62,7 @@ public:
 	std::shared_ptr<ConcolicValue> extract(unsigned offset, klee::Expr::Width width);
 	std::shared_ptr<ConcolicValue> sext(klee::Expr::Width width);
 	std::shared_ptr<ConcolicValue> zext(klee::Expr::Width width);
+	std::shared_ptr<ConcolicValue> select(std::shared_ptr<ConcolicValue> texpr, std::shared_ptr<ConcolicValue> fexpr);
 
 private:
 	klee::ExprBuilder *builder = NULL;
