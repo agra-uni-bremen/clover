@@ -108,9 +108,9 @@ TestCase::toFile(ConcreteStore store, std::ofstream &stream)
 
 		IntValue v = assign.second;
 		if (std::get_if<uint8_t>(&v)) {
-			stream << "uint8_t\t" << std::get<uint8_t>(v);
+			stream << "uint8_t\t" << std::dec << +std::get<uint8_t>(v);
 		} else if (std::get_if<uint32_t>(&v)) {
-			stream << "uint32_t\t" << std::get<uint32_t>(v);
+			stream << "uint32_t\t" << std::dec << +std::get<uint32_t>(v);
 		} else {
 			assert(0);
 		}
