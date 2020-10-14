@@ -25,6 +25,25 @@ existing RV32 instruction set simulator (e.g. as a git submodule).
 Afterwards, it can easily be integrated into CMake-based build systems
 through the [`add_subdirectory`][cmake add_subdirectory] directive.
 
+## API
+
+The central data types are the following C++ classes:
+
+* `ConcolicValue`: Tuple of concrete and symbolic value with associated operations.
+* `Solver`: Allows evaluating symbolic/concrete part of a `ConcolicValue`.
+   Also acts as a factory for `ConcolicValue` types.
+* `Trace`: Collects path conditions for the current execution.  Based on
+   collected path conditions, assignment for new paths can be discovered.
+* `ExecutionContext`: Used to management assignment of symbolic data to
+   variable names, i.e. manages the concrete/symbolic store.
+
+Additional convenience classes are provided. For example,
+`ConcolicMemory` eases the implementation of a memory peripheral for
+instruction set simulators. The `TestCase` class on the other hand can
+be used to write a concrete store to a file, thereby easing replaying of
+certain paths. The `BitVector` class is primarily intended for internal
+use.
+
 ## Development
 
 A pre-commit git hook for checking if files are properly formatted is
