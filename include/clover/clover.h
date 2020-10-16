@@ -28,7 +28,8 @@ private:
 	BitVector(IntValue value);
 	BitVector(const klee::Array *array);
 
-	std::shared_ptr<BitVector> negate(void);
+	std::shared_ptr<BitVector> eqTrue(void);
+	std::shared_ptr<BitVector> eqFalse(void);
 
 	friend class ConcolicValue;
 	friend class Solver;

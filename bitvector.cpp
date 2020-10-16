@@ -34,9 +34,15 @@ BitVector::BitVector(const klee::Array *array)
 }
 
 std::shared_ptr<BitVector>
-BitVector::negate(void)
+BitVector::eqTrue(void)
 {
-	// Copied from klee::Query::negateExpr()
-	auto expr = klee::Expr::createIsZero(this->expr);
+	auto expr = klee::EqExpr::alloc(this->expr, klee::ConstantExpr::alloc(1, klee::Expr::Bool));
+	return std::make_shared<BitVector>(BitVector(expr));
+}
+
+std::shared_ptr<BitVector>
+BitVector::eqFalse(void)
+{
+	auto expr = klee::EqExpr::alloc(this->expr, klee::ConstantExpr::alloc(0, klee::Expr::Bool));
 	return std::make_shared<BitVector>(BitVector(expr));
 }

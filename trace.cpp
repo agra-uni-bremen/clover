@@ -58,9 +58,8 @@ Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
 		auto bv = path.at(i).first;
 		auto cond = path.at(i).second;
 
-		// Adjust branch condition according to the path we are
-		// taking (i.e. true or false branch), negate if false.
-		auto bvcond = (cond) ? bv : bv->negate();
+		// Adjust branch condition according to the path we are taking.
+		auto bvcond = (cond) ? bv->eqTrue() : bv->eqFalse();
 
 		cm.addConstraint(bvcond->expr);
 	}
