@@ -53,6 +53,7 @@ public:
 	std::shared_ptr<ConcolicValue> udiv(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sdiv(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> urem(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> srem(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sub(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sge(std::shared_ptr<ConcolicValue> other);
