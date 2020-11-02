@@ -50,6 +50,8 @@ public:
 	std::shared_ptr<ConcolicValue> ashr(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> add(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> mul(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> udiv(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> sdiv(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> urem(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sub(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
