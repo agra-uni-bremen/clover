@@ -227,16 +227,19 @@ public:
 
 class TestCase {
 	class ParserError : public std::exception {
-		std::string fileName, msg;
+		std::string fileName, msg, whatstr;
 		size_t line;
 
 	public:
 		ParserError(std::string _fileName, size_t _line, std::string _msg)
-		    : fileName(_fileName), msg(_msg), line(_line){};
+		    : fileName(_fileName), msg(_msg), line(_line)
+		{
+			this->whatstr = fileName + ":" + std::to_string(line) + ": " + msg;
+		}
 
 		const char *what(void) const throw()
 		{
-			return (fileName + ":" + std::to_string(line) + ": " + msg).c_str();
+			return whatstr.c_str();
 		}
 	};
 
