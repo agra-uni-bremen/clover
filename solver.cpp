@@ -37,6 +37,12 @@ Solver::~Solver(void)
 	delete this->builder;
 }
 
+void
+Solver::setTimeout(klee::time::Span timeout)
+{
+	this->solver->setCoreSolverTimeout(timeout);
+}
+
 std::optional<klee::Assignment>
 Solver::getAssignment(const klee::Query &query)
 {

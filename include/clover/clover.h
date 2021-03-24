@@ -93,6 +93,8 @@ public:
 	Solver(klee::Solver *_solver = NULL);
 	~Solver(void);
 
+	void setTimeout(klee::time::Span timeout);
+
 	std::optional<klee::Assignment> getAssignment(const klee::Query &query);
 
 	bool eval(const klee::Query &query);
