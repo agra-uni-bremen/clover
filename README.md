@@ -60,7 +60,7 @@ no.~01IW19001.
 
 Furthermore, this work is based heavily on KLEE. A minimally modified
 version of the KLEE source is included in `./klee`. The license of this
-source cod is found in `./klee/LICENSE.txt`.
+source code is found in `./klee/LICENSE.txt`.
 
 [s2e klee]: https://github.com/S2E/s2e/tree/master/klee
 [klee website]: https://klee.github.io/
