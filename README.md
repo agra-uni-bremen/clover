@@ -51,6 +51,17 @@ provided in `.githooks`. It can be activated using:
 
 	$ git config --local core.hooksPath .githooks
 
+## Acknowledgements
+
+This work was supported in part by the German Federal Ministry of
+Education and Research (BMBF) within the project Scale4Edge under
+contract no.~16ME0127 and within the project VerSys under contract
+no.~01IW19001.
+
+Furthermore, this work is based heavily on KLEE. A minimally modified
+version of the KLEE source is included in `./klee`. The license of this
+source cod is found in `./klee/LICENSE.txt`.
+
 [s2e klee]: https://github.com/S2E/s2e/tree/master/klee
 [klee website]: https://klee.github.io/
 [z3 repo]: https://github.com/Z3Prover/z3
