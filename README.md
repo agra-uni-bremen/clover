@@ -65,7 +65,7 @@ source code is found in `./klee/LICENSE.txt`.
 ## License
 
 This repository includes a bundled version of KLEE, for the license of
-this code refer to ./klee/LICENSE.txt`. The clover code itself is
+this code refer to `./klee/LICENSE.txt`. The clover code itself is
 licenced under the following license:
 
 	This program is free software: you can redistribute it and/or modify
