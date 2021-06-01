@@ -62,6 +62,25 @@ Furthermore, this work is based heavily on KLEE. A minimally modified
 version of the KLEE source is included in `./klee`. The license of this
 source code is found in `./klee/LICENSE.txt`.
 
+## License
+
+This repository includes a bundled version of KLEE, for the license of
+this code refer to ./klee/LICENSE.txt`. The clover code itself is
+licenced under the following license:
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 [s2e klee]: https://github.com/S2E/s2e/tree/master/klee
 [klee website]: https://klee.github.io/
 [z3 repo]: https://github.com/Z3Prover/z3
