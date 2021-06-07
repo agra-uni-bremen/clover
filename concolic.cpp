@@ -133,7 +133,7 @@ ConcolicValue::zext(klee::Expr::Width width)
 std::shared_ptr<ConcolicValue>
 ConcolicValue::select(std::shared_ptr<ConcolicValue> texpr, std::shared_ptr<ConcolicValue> fexpr)
 {
-	auto expr = builder->Select(concrete->expr, texpr->toExpr(), fexpr->toExpr());
+	auto expr = builder->Select(concrete->expr, texpr->concrete->expr, fexpr->concrete->expr);
 	auto bvv = std::make_shared<BitVector>(BitVector(expr));
 
 	if (this->symbolic.has_value()) {
