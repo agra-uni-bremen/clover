@@ -36,15 +36,6 @@ ConcolicValue::getWidth(void)
 	return concrete->expr->getWidth();
 }
 
-klee::ref<klee::Expr>
-ConcolicValue::toExpr(void)
-{
-	if (symbolic.has_value())
-		return (*symbolic)->expr;
-	else
-		return concrete->expr;
-}
-
 BINARY_OPERATOR(ConcolicValue::eq, Eq)
 BINARY_OPERATOR(ConcolicValue::ne, Ne)
 BINARY_OPERATOR(ConcolicValue::lshl, Shl)
@@ -133,11 +124,18 @@ ConcolicValue::zext(klee::Expr::Width width)
 std::shared_ptr<ConcolicValue>
 ConcolicValue::select(std::shared_ptr<ConcolicValue> texpr, std::shared_ptr<ConcolicValue> fexpr)
 {
+	auto toExpr = [](std::shared_ptr<ConcolicValue> c) {
+		if (c->symbolic.has_value())
+			return (*(c->symbolic))->expr;
+		else
+			return c->concrete->expr;
+	};
+
 	auto expr = builder->Select(concrete->expr, texpr->concrete->expr, fexpr->concrete->expr);
 	auto bvv = std::make_shared<BitVector>(BitVector(expr));
 
 	if (this->symbolic.has_value()) {
-		auto expr = builder->Select((*symbolic)->expr, texpr->toExpr(), fexpr->toExpr());
+		auto expr = builder->Select((*symbolic)->expr, toExpr(texpr), toExpr(fexpr));
 		auto bvs = std::make_shared<BitVector>(BitVector(expr));
 
 		return std::make_shared<ConcolicValue>(ConcolicValue(builder, bvv, bvs));

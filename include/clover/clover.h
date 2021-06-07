@@ -76,9 +76,6 @@ private:
 	              std::shared_ptr<BitVector> _concrete,
 	              std::optional<std::shared_ptr<BitVector>> _symbolic = std::nullopt);
 
-	/* Returns symbolic expression, if available, or concrete otherwise. */
-	klee::ref<klee::Expr> toExpr(void);
-
 	/* The solver acts as a factory for ConcolicValue */
 	friend class Solver;
 };
