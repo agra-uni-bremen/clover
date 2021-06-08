@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include <clover/clover.h>
 
 using namespace clover;
@@ -25,7 +27,8 @@ using namespace clover;
 ConcolicValue::ConcolicValue(klee::ExprBuilder *_builder, std::shared_ptr<BitVector> _concrete, std::optional<std::shared_ptr<BitVector>> _symbolic)
     : concrete(_concrete), symbolic(_symbolic), builder(_builder)
 {
-	return;
+	assert(isa<klee::ConstantExpr>(concrete->expr) &&
+	       "concrete part of ConcolicValue must be a ConstantExpr");
 }
 
 unsigned
