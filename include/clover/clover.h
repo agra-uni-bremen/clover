@@ -1,6 +1,7 @@
 #ifndef CLOVER_H
 #define CLOVER_H
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -115,16 +116,12 @@ public:
 	template <typename T>
 	T getValue(std::shared_ptr<BitVector> bv)
 	{
-		klee::ConstraintSet cs;
-
 		// Since we don't have constraints here, these function
 		// only works on ConstantExpr as provided by ->concrete.
-		assert(isa<klee::ConstantExpr>(bv->expr) &&
-		       "getValue only works on constants");
+		klee::ConstantExpr *ce = dyn_cast<klee::ConstantExpr>(bv->expr);
+		assert(ce && "getValue only works on constants");
 
-		// For ConstantExprs no constraints are required.
-		auto q = klee::Query(cs, bv->expr);
-		return this->evalValue<T>(q);
+		return ce->getZExtValue(sizeof(T) * 8);
 	}
 };
 
