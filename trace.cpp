@@ -11,7 +11,7 @@
 using namespace clover;
 
 Trace::Trace(Solver &_solver)
-    : solver(_solver)
+    : solver(_solver), cm(cs)
 {
 	pathCondsRoot = std::make_shared<Branch>(Branch()); /* placeholder */
 	pathCondsCurrent = nullptr;
@@ -20,12 +20,16 @@ Trace::Trace(Solver &_solver)
 void
 Trace::reset(void)
 {
+	cs = klee::ConstraintSet();
 	pathCondsCurrent = nullptr;
 }
 
 void
 Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 {
+	auto c = (condition) ? bv->eqTrue() : bv->eqFalse();
+	cm.addConstraint(c->expr);
+
 	std::shared_ptr<Branch> branch = nullptr;
 	if (pathCondsCurrent != nullptr) {
 		branch = pathCondsCurrent;
@@ -49,7 +53,14 @@ Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 }
 
 klee::Query
-Trace::getQuery(klee::ConstraintSet &cs, Branch::Path &path)
+Trace::getQuery(std::shared_ptr<BitVector> bv)
+{
+	auto expr = cm.simplifyExpr(cs, bv->expr);
+	return klee::Query(cs, expr);
+}
+
+klee::Query
+Trace::newQuery(klee::ConstraintSet &cs, Branch::Path &path)
 {
 	size_t query_idx = path.size() - 1;
 	auto cm = klee::ConstraintManager(cs);
@@ -85,7 +96,7 @@ Trace::findNewPath(void)
 		if (!pathCondsRoot->getRandomPath(path))
 			return std::nullopt; /* all branches exhausted */
 
-		auto query = getQuery(cs, path);
+		auto query = newQuery(cs, path);
 		assign = solver.getAssignment(query);
 	} while (!assign.has_value()); /* loop until we found a sat assignment */
 

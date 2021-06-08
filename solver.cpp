@@ -91,15 +91,6 @@ Solver::eval(const klee::Query &query)
 	return false;
 }
 
-bool
-Solver::eval(std::shared_ptr<BitVector> bv)
-{
-	klee::ConstraintSet cs;
-
-	auto q = klee::Query(cs, bv->expr);
-	return this->eval(q);
-}
-
 std::shared_ptr<ConcolicValue>
 Solver::BVC(std::optional<std::string> name, IntValue value)
 {
@@ -141,6 +132,6 @@ Solver::BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t bu
 	for (size_t i = 0; i < buflen; i++) {
 		// Extract expression works on bit indicies and bit sizes
 		auto byte = value->extract(i * 8, klee::Expr::Int8);
-		buf[i] = evalValue<uint8_t>(byte->concrete);
+		buf[i] = getValue<uint8_t>(byte->concrete);
 	}
 }
