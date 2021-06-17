@@ -44,7 +44,7 @@ ConcolicMemory::load(Addr addr, unsigned bytesize)
 std::shared_ptr<ConcolicValue>
 ConcolicMemory::load(std::shared_ptr<ConcolicValue> addr, unsigned bytesize)
 {
-	auto base_addr = solver.evalValue<ConcolicMemory::Addr>(addr->concrete);
+	auto base_addr = solver.getValue<ConcolicMemory::Addr>(addr->concrete);
 	return load(base_addr, bytesize);
 }
 
@@ -63,6 +63,6 @@ ConcolicMemory::store(Addr addr, std::shared_ptr<ConcolicValue> value, unsigned 
 void
 ConcolicMemory::store(std::shared_ptr<ConcolicValue> addr, std::shared_ptr<ConcolicValue> value, unsigned bytesize)
 {
-	auto base_addr = solver.evalValue<ConcolicMemory::Addr>(addr->concrete);
+	auto base_addr = solver.getValue<ConcolicMemory::Addr>(addr->concrete);
 	return store(base_addr, value, bytesize);
 }
