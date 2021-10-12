@@ -98,7 +98,7 @@ public:
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 
 	/* Methods for converting between concolic values and uint8_t buffers */
-	std::shared_ptr<ConcolicValue> BVC(uint8_t *buf, size_t buflen);
+	std::shared_ptr<ConcolicValue> BVC(uint8_t *buf, size_t buflen, bool lsb = false);
 	void BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t buflen);
 
 	template <typename T>
