@@ -6,7 +6,7 @@
 using namespace clover;
 
 #define CHECK_BRANCH(BRANCH, ...) \
-	(BRANCH && BRANCH->getRandomPath(__VA_ARGS__))
+	(BRANCH && BRANCH->randPathPreferHigh(__VA_ARGS__))
 
 Trace::Branch::Branch(void)
 {
@@ -25,7 +25,7 @@ Trace::Branch::isPlaceholder(void)
 }
 
 bool
-Trace::Branch::getRandomPath(Path &path)
+Trace::Branch::randPathPreferHigh(Path &path)
 {
 	if (this->isPlaceholder())
 		return false;

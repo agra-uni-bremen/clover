@@ -93,7 +93,7 @@ Trace::findNewPath(void)
 		klee::ConstraintSet cs;
 
 		Branch::Path path;
-		if (!pathCondsRoot->getRandomPath(path))
+		if (!pathCondsRoot->randPathPreferHigh(path))
 			return std::nullopt; /* all branches exhausted */
 
 		auto query = newQuery(cs, path);

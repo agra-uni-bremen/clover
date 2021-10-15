@@ -177,8 +177,9 @@ private:
 		/* Returns seemingly random path to a node in the tree
 		 * for which either the false or the true branch wasn't
 		 * attempted to be taken yet. If no such node exists,
-		 * false is returned. */
-		bool getRandomPath(Path &path);
+		 * false is returned. Prefers nodes which are higher up
+		 * in the execution tree. */
+		bool randPathPreferHigh(Path &path);
 	};
 
 	Solver &solver;
