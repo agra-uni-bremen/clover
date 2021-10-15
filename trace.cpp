@@ -66,18 +66,22 @@ Trace::newQuery(klee::ConstraintSet &cs, Path &path)
 	auto cm = klee::ConstraintManager(cs);
 
 	for (size_t i = 0; i < path.size(); i++) {
-		auto bv = path.at(i).first->bv;
+		auto branch = path.at(i).first;
 		auto cond = path.at(i).second;
 
+		auto bv = branch->bv;
 		auto bvcond = (cond) ? bv->eqTrue() : bv->eqFalse();
+
 		if (i < query_idx) {
 			cm.addConstraint(bvcond->expr);
 			continue;
 		}
 
+		auto expr = cm.simplifyExpr(cs, bvcond->expr);
+
 		// This is the last expression on the path. By negating
 		// it we can potentially discover a new path.
-		auto expr = cm.simplifyExpr(cs, bvcond->expr);
+		branch->wasNegated = true;
 		return klee::Query(cs, expr).negateExpr();
 	}
 
@@ -122,11 +126,5 @@ Trace::getStore(const klee::Assignment &assign)
 bool
 Trace::randPathPreferHigh(std::shared_ptr<Node> node, Path &path)
 {
-	if (!node->randomUnnegated(path))
-		return false;
-
-	std::shared_ptr<Branch> branch = path.back().first;
-	branch->wasNegated = true;
-
-	return true;
+	return node->randomUnnegated(path);
 }
