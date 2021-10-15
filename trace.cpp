@@ -69,7 +69,7 @@ Trace::newQuery(klee::ConstraintSet &cs, Path &path)
 	auto cm = klee::ConstraintManager(cs);
 
 	for (size_t i = 0; i < path.size(); i++) {
-		auto bv = path.at(i).first;
+		auto bv = path.at(i).first->bv;
 		auto cond = path.at(i).second;
 
 		auto bvcond = (cond) ? bv->eqTrue() : bv->eqFalse();
@@ -129,7 +129,7 @@ Trace::randPathPreferHigh(std::shared_ptr<Node> node, Path &path)
 		return false;
 
 	// Second part of pair is modified by index later
-	path.push_back(std::make_pair(node->value->bv, false));
+	path.push_back(std::make_pair(node->value, false));
 	size_t idx = path.size() - 1;
 
 	/* XXX: This prefers node in the upper tree */

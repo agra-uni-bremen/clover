@@ -160,9 +160,6 @@ typedef std::map<std::string, IntValue> ConcreteStore;
  */
 class Trace {
 private:
-	typedef std::pair<std::shared_ptr<BitVector>, bool> PathElement;
-	typedef std::vector<PathElement> Path;
-
 	class Branch {
 	public:
 		std::shared_ptr<BitVector> bv;
@@ -174,6 +171,9 @@ private:
 			return;
 		}
 	};
+
+	typedef std::pair<std::shared_ptr<Branch>, bool> PathElement;
+	typedef std::vector<PathElement> Path;
 
 	class Node {
 	public:
