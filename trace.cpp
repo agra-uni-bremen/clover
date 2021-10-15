@@ -8,6 +8,9 @@
 
 #include "fns.h"
 
+#define CHECK_BRANCH(BRANCH, ...) \
+	(BRANCH && randPathPreferHigh(BRANCH, __VA_ARGS__))
+
 using namespace clover;
 
 Trace::Trace(Solver &_solver)
@@ -93,7 +96,7 @@ Trace::findNewPath(void)
 		klee::ConstraintSet cs;
 
 		Branch::Path path;
-		if (!pathCondsRoot->randPathPreferHigh(path))
+		if (!randPathPreferHigh(pathCondsRoot, path))
 			return std::nullopt; /* all branches exhausted */
 
 		auto query = newQuery(cs, path);
@@ -117,4 +120,48 @@ Trace::getStore(const klee::Assignment &assign)
 	}
 
 	return store;
+}
+
+bool
+Trace::randPathPreferHigh(std::shared_ptr<Branch> node, Branch::Path &path)
+{
+	if (node->isPlaceholder())
+		return false;
+
+	// Second part of pair is modified by index later
+	path.push_back(std::make_pair(node->bv, false));
+	size_t idx = path.size() - 1;
+
+	/* XXX: This prefers node in the upper tree */
+	if (!node->wasNegated && (!node->true_branch || !node->false_branch)) {
+		path[idx].second = (node->true_branch != nullptr);
+		if (path[idx].second)
+			assert(node->false_branch == nullptr);
+
+		node->wasNegated = true;
+		return true; /* Found undiscovered path */
+	}
+
+	/* Randomly traverse true or false branch first */
+	int random = rand();
+	if (random % 2 == 0) {
+		if (CHECK_BRANCH(node->true_branch, path)) {
+			path[idx].second = true;
+			return true;
+		} else if (CHECK_BRANCH(node->false_branch, path)) {
+			path[idx].second = false;
+			return true;
+		}
+	} else {
+		if (CHECK_BRANCH(node->false_branch, path)) {
+			path[idx].second = false;
+			return true;
+		} else if (CHECK_BRANCH(node->true_branch, path)) {
+			path[idx].second = true;
+			return true;
+		}
+	}
+
+	path.pop_back(); // node is not on path
+	return false;
 }
