@@ -184,6 +184,15 @@ private:
 
 		Node(void);
 		bool isPlaceholder(void);
+
+		/* Returns a seemingly random unnegated path to a branch
+		 * condition in the Tree but prefers nodes in the upper
+		 * Tree. The caller is responsible for updating the wasNegated
+		 * member of the last element of the path, if the caller actually
+		 * decides to negate the branch condition the path leads to.
+		 *
+		 * Returns false if no unnegated branch condition exists. */
+		bool randomUnnegated(Path &path);
 	};
 
 	Solver &solver;
