@@ -163,7 +163,13 @@ private:
 	class Branch {
 	public:
 		std::shared_ptr<BitVector> bv;
-		bool wasNegated; /* Don't negate branches twice (could be unsat) */
+
+		// Track if this negation of this branch condition was
+		// already attempted. Negating the same branch condition
+		// twice (even if a true/false branch) was not discovered
+		// yet must be avoided as the negated branch condition
+		// could be unsat.
+		bool wasNegated;
 
 		Branch(std::shared_ptr<BitVector> _bv, bool _wasNegated)
 		    : bv(_bv), wasNegated(_wasNegated)
