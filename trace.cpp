@@ -63,7 +63,7 @@ Trace::getQuery(std::shared_ptr<BitVector> bv)
 }
 
 klee::Query
-Trace::newQuery(klee::ConstraintSet &cs, Branch::Path &path)
+Trace::newQuery(klee::ConstraintSet &cs, Path &path)
 {
 	size_t query_idx = path.size() - 1;
 	auto cm = klee::ConstraintManager(cs);
@@ -95,7 +95,7 @@ Trace::findNewPath(void)
 	do {
 		klee::ConstraintSet cs;
 
-		Branch::Path path;
+		Path path;
 		if (!randPathPreferHigh(pathCondsRoot, path))
 			return std::nullopt; /* all branches exhausted */
 
@@ -123,7 +123,7 @@ Trace::getStore(const klee::Assignment &assign)
 }
 
 bool
-Trace::randPathPreferHigh(std::shared_ptr<Branch> node, Branch::Path &path)
+Trace::randPathPreferHigh(std::shared_ptr<Branch> node, Path &path)
 {
 	if (node->isPlaceholder())
 		return false;

@@ -160,11 +160,11 @@ typedef std::map<std::string, IntValue> ConcreteStore;
  */
 class Trace {
 private:
+	typedef std::pair<std::shared_ptr<BitVector>, bool> PathElement;
+	typedef std::vector<PathElement> Path;
+
 	class Branch {
 	public:
-		typedef std::pair<std::shared_ptr<BitVector>, bool> PathElement;
-		typedef std::vector<PathElement> Path;
-
 		std::shared_ptr<BitVector> bv;
 		bool wasNegated; /* Don't negate nodes twice (could be unsat) */
 
@@ -183,14 +183,14 @@ private:
 	std::shared_ptr<Branch> pathCondsCurrent;
 
 	/* Create new query for path in execution tree. */
-	klee::Query newQuery(klee::ConstraintSet &cs, Branch::Path &path);
+	klee::Query newQuery(klee::ConstraintSet &cs, Path &path);
 
 	/* Returns seemingly random path to a node in the tree
 	 * for which either the false or the true branch wasn't
 	 * attempted to be taken yet. If no such node exists,
 	 * false is returned. Prefers nodes which are higher up
 	 * in the execution tree. */
-	bool randPathPreferHigh(std::shared_ptr<Branch> node, Branch::Path &path);
+	bool randPathPreferHigh(std::shared_ptr<Branch> node, Path &path);
 
 public:
 	Trace(Solver &_solver);
