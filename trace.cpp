@@ -16,7 +16,7 @@ using namespace clover;
 Trace::Trace(Solver &_solver)
     : solver(_solver), cm(cs)
 {
-	pathCondsRoot = std::make_shared<Branch>(Branch()); /* placeholder */
+	pathCondsRoot = std::make_shared<Node>(Node()); /* placeholder */
 	pathCondsCurrent = nullptr;
 }
 
@@ -33,25 +33,25 @@ Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 	auto c = (condition) ? bv->eqTrue() : bv->eqFalse();
 	cm.addConstraint(c->expr);
 
-	std::shared_ptr<Branch> branch = nullptr;
+	std::shared_ptr<Node> node = nullptr;
 	if (pathCondsCurrent != nullptr) {
-		branch = pathCondsCurrent;
+		node = pathCondsCurrent;
 	} else {
-		branch = pathCondsRoot;
+		node = pathCondsRoot;
 	}
 
-	assert(branch);
-	if (branch->isPlaceholder())
-		branch->bv = bv;
+	assert(node);
+	if (node->isPlaceholder())
+		node->value = std::make_shared<Branch>(Branch(bv, false));
 
 	if (condition) {
-		if (!branch->true_branch)
-			branch->true_branch = std::make_shared<Branch>(Branch());
-		pathCondsCurrent = branch->true_branch;
+		if (!node->true_branch)
+			node->true_branch = std::make_shared<Node>(Node());
+		pathCondsCurrent = node->true_branch;
 	} else {
-		if (!branch->false_branch)
-			branch->false_branch = std::make_shared<Branch>(Branch());
-		pathCondsCurrent = branch->false_branch;
+		if (!node->false_branch)
+			node->false_branch = std::make_shared<Node>(Node());
+		pathCondsCurrent = node->false_branch;
 	}
 }
 
@@ -123,22 +123,23 @@ Trace::getStore(const klee::Assignment &assign)
 }
 
 bool
-Trace::randPathPreferHigh(std::shared_ptr<Branch> node, Path &path)
+Trace::randPathPreferHigh(std::shared_ptr<Node> node, Path &path)
 {
 	if (node->isPlaceholder())
 		return false;
 
 	// Second part of pair is modified by index later
-	path.push_back(std::make_pair(node->bv, false));
+	path.push_back(std::make_pair(node->value->bv, false));
 	size_t idx = path.size() - 1;
 
 	/* XXX: This prefers node in the upper tree */
-	if (!node->wasNegated && (!node->true_branch || !node->false_branch)) {
+	auto v = node->value;
+	if (!v->wasNegated && (!node->true_branch || !node->false_branch)) {
 		path[idx].second = (node->true_branch != nullptr);
 		if (path[idx].second)
 			assert(node->false_branch == nullptr);
 
-		node->wasNegated = true;
+		v->wasNegated = true;
 		return true; /* Found undiscovered path */
 	}
 

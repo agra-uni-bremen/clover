@@ -166,12 +166,23 @@ private:
 	class Branch {
 	public:
 		std::shared_ptr<BitVector> bv;
-		bool wasNegated; /* Don't negate nodes twice (could be unsat) */
+		bool wasNegated; /* Don't negate branches twice (could be unsat) */
 
-		std::shared_ptr<Branch> true_branch;
-		std::shared_ptr<Branch> false_branch;
+		Branch(std::shared_ptr<BitVector> _bv, bool _wasNegated)
+		    : bv(_bv), wasNegated(_wasNegated)
+		{
+			return;
+		}
+	};
 
-		Branch(void);
+	class Node {
+	public:
+		std::shared_ptr<Branch> value;
+
+		std::shared_ptr<Node> true_branch;
+		std::shared_ptr<Node> false_branch;
+
+		Node(void);
 		bool isPlaceholder(void);
 	};
 
@@ -179,8 +190,8 @@ private:
 	klee::ConstraintSet cs;
 	klee::ConstraintManager cm;
 
-	std::shared_ptr<Branch> pathCondsRoot;
-	std::shared_ptr<Branch> pathCondsCurrent;
+	std::shared_ptr<Node> pathCondsRoot;
+	std::shared_ptr<Node> pathCondsCurrent;
 
 	/* Create new query for path in execution tree. */
 	klee::Query newQuery(klee::ConstraintSet &cs, Path &path);
@@ -190,7 +201,7 @@ private:
 	 * attempted to be taken yet. If no such node exists,
 	 * false is returned. Prefers nodes which are higher up
 	 * in the execution tree. */
-	bool randPathPreferHigh(std::shared_ptr<Branch> node, Path &path);
+	bool randPathPreferHigh(std::shared_ptr<Node> node, Path &path);
 
 public:
 	Trace(Solver &_solver);
