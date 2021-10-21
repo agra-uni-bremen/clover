@@ -211,13 +211,6 @@ private:
 	/* Create new query for path in execution tree. */
 	klee::Query newQuery(klee::ConstraintSet &cs, Path &path);
 
-	/* Returns seemingly random path to a node in the tree
-	 * for which either the false or the true branch wasn't
-	 * attempted to be taken yet. If no such node exists,
-	 * false is returned. Prefers nodes which are higher up
-	 * in the execution tree. */
-	bool randPathPreferHigh(std::shared_ptr<Node> node, Path &path);
-
 public:
 	Trace(Solver &_solver);
 	void reset(void);

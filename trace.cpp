@@ -97,7 +97,7 @@ Trace::findNewPath(void)
 		klee::ConstraintSet cs;
 
 		Path path;
-		if (!randPathPreferHigh(pathCondsRoot, path))
+		if (!pathCondsRoot->randomUnnegated(path))
 			return std::nullopt; /* all branches exhausted */
 
 		auto query = newQuery(cs, path);
@@ -121,10 +121,4 @@ Trace::getStore(const klee::Assignment &assign)
 	}
 
 	return store;
-}
-
-bool
-Trace::randPathPreferHigh(std::shared_ptr<Node> node, Path &path)
-{
-	return node->randomUnnegated(path);
 }
