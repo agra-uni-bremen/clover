@@ -171,8 +171,12 @@ private:
 		// could be unsat.
 		bool wasNegated;
 
-		Branch(std::shared_ptr<BitVector> _bv, bool _wasNegated)
-		    : bv(_bv), wasNegated(_wasNegated)
+		// Address of branch instruction for the associated
+		// branch condition represented by the BitVector.
+		uint32_t addr;
+
+		Branch(std::shared_ptr<BitVector> _bv, bool _wasNegated, uint32_t _addr)
+		    : bv(_bv), wasNegated(_wasNegated), addr(_addr)
 		{
 			return;
 		}
@@ -216,7 +220,7 @@ public:
 	void reset(void);
 
 	/* Add bv as constraint to ConstraintSet and as node in tree. */
-	void add(bool condition, std::shared_ptr<BitVector> bv);
+	void add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc);
 
 	/* Create query from BitVector with currently tracked constraints. */
 	klee::Query getQuery(std::shared_ptr<BitVector> bv);

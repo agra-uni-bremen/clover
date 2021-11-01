@@ -25,7 +25,7 @@ Trace::reset(void)
 }
 
 void
-Trace::add(bool condition, std::shared_ptr<BitVector> bv)
+Trace::add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc)
 {
 	auto c = (condition) ? bv->eqTrue() : bv->eqFalse();
 	cm.addConstraint(c->expr);
@@ -39,7 +39,7 @@ Trace::add(bool condition, std::shared_ptr<BitVector> bv)
 
 	assert(node);
 	if (node->isPlaceholder())
-		node->value = std::make_shared<Branch>(Branch(bv, false));
+		node->value = std::make_shared<Branch>(Branch(bv, false, pc));
 
 	if (condition) {
 		if (!node->true_branch)
