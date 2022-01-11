@@ -108,7 +108,7 @@ Solver::BVC(std::optional<std::string> name, IntValue value)
 }
 
 std::shared_ptr<ConcolicValue>
-Solver::BVC(uint8_t *buf, size_t buflen)
+Solver::BVC(uint8_t *buf, size_t buflen, bool lsb)
 {
 	std::shared_ptr<ConcolicValue> result = nullptr;
 	for (size_t i = 0; i < buflen; i++) {
@@ -116,7 +116,10 @@ Solver::BVC(uint8_t *buf, size_t buflen)
 		if (!result) {
 			result = byte;
 		} else {
-			result = byte->concat(result);
+			if (lsb) // ReadLSB
+				result = result->concat(byte);
+			else // ReadMSB
+				result = byte->concat(result);
 		}
 	}
 

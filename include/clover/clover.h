@@ -98,7 +98,7 @@ public:
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 
 	/* Methods for converting between concolic values and uint8_t buffers */
-	std::shared_ptr<ConcolicValue> BVC(uint8_t *buf, size_t buflen);
+	std::shared_ptr<ConcolicValue> BVC(uint8_t *buf, size_t buflen, bool lsb = false);
 	void BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t buflen);
 
 	template <typename T>
@@ -162,41 +162,65 @@ class Trace {
 private:
 	class Branch {
 	public:
-		typedef std::pair<std::shared_ptr<BitVector>, bool> PathElement;
-		typedef std::vector<PathElement> Path;
-
 		std::shared_ptr<BitVector> bv;
-		bool wasNegated; /* Don't negate nodes twice (could be unsat) */
 
-		std::shared_ptr<Branch> true_branch;
-		std::shared_ptr<Branch> false_branch;
+		// Track if this negation of this branch condition was
+		// already attempted. Negating the same branch condition
+		// twice (even if a true/false branch) was not discovered
+		// yet must be avoided as the negated branch condition
+		// could be unsat.
+		bool wasNegated;
 
-		Branch(void);
+		// Address of branch instruction for the associated
+		// branch condition represented by the BitVector.
+		uint32_t addr;
+
+		Branch(std::shared_ptr<BitVector> _bv, bool _wasNegated, uint32_t _addr)
+		    : bv(_bv), wasNegated(_wasNegated), addr(_addr)
+		{
+			return;
+		}
+	};
+
+	typedef std::pair<std::shared_ptr<Branch>, bool> PathElement;
+	typedef std::vector<PathElement> Path;
+
+	class Node {
+	public:
+		std::shared_ptr<Branch> value;
+
+		std::shared_ptr<Node> true_branch;
+		std::shared_ptr<Node> false_branch;
+
+		Node(void);
 		bool isPlaceholder(void);
 
-		/* Returns seemingly random path to a node in the tree
-		 * for which either the false or the true branch wasn't
-		 * attempted to be taken yet. If no such node exists,
-		 * false is returned. */
-		bool getRandomPath(Path &path);
+		/* Returns a seemingly random unnegated path to a branch
+		 * condition in the Tree but prefers nodes in the upper
+		 * Tree. The caller is responsible for updating the wasNegated
+		 * member of the last element of the path, if the caller actually
+		 * decides to negate the branch condition the path leads to.
+		 *
+		 * Returns false if no unnegated branch condition exists. */
+		bool randomUnnegated(Path &path);
 	};
 
 	Solver &solver;
 	klee::ConstraintSet cs;
 	klee::ConstraintManager cm;
 
-	std::shared_ptr<Branch> pathCondsRoot;
-	std::shared_ptr<Branch> pathCondsCurrent;
+	std::shared_ptr<Node> pathCondsRoot;
+	std::shared_ptr<Node> pathCondsCurrent;
 
 	/* Create new query for path in execution tree. */
-	klee::Query newQuery(klee::ConstraintSet &cs, Branch::Path &path);
+	klee::Query newQuery(klee::ConstraintSet &cs, Path &path);
 
 public:
 	Trace(Solver &_solver);
 	void reset(void);
 
 	/* Add bv as constraint to ConstraintSet and as node in tree. */
-	void add(bool condition, std::shared_ptr<BitVector> bv);
+	void add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc);
 
 	/* Create query from BitVector with currently tracked constraints. */
 	klee::Query getQuery(std::shared_ptr<BitVector> bv);

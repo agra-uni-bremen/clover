@@ -13,7 +13,7 @@ using namespace clover;
 Trace::Trace(Solver &_solver)
     : solver(_solver), cm(cs)
 {
-	pathCondsRoot = std::make_shared<Branch>(Branch()); /* placeholder */
+	pathCondsRoot = std::make_shared<Node>(Node()); /* placeholder */
 	pathCondsCurrent = nullptr;
 }
 
@@ -25,30 +25,30 @@ Trace::reset(void)
 }
 
 void
-Trace::add(bool condition, std::shared_ptr<BitVector> bv)
+Trace::add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc)
 {
 	auto c = (condition) ? bv->eqTrue() : bv->eqFalse();
 	cm.addConstraint(c->expr);
 
-	std::shared_ptr<Branch> branch = nullptr;
+	std::shared_ptr<Node> node = nullptr;
 	if (pathCondsCurrent != nullptr) {
-		branch = pathCondsCurrent;
+		node = pathCondsCurrent;
 	} else {
-		branch = pathCondsRoot;
+		node = pathCondsRoot;
 	}
 
-	assert(branch);
-	if (branch->isPlaceholder())
-		branch->bv = bv;
+	assert(node);
+	if (node->isPlaceholder())
+		node->value = std::make_shared<Branch>(Branch(bv, false, pc));
 
 	if (condition) {
-		if (!branch->true_branch)
-			branch->true_branch = std::make_shared<Branch>(Branch());
-		pathCondsCurrent = branch->true_branch;
+		if (!node->true_branch)
+			node->true_branch = std::make_shared<Node>(Node());
+		pathCondsCurrent = node->true_branch;
 	} else {
-		if (!branch->false_branch)
-			branch->false_branch = std::make_shared<Branch>(Branch());
-		pathCondsCurrent = branch->false_branch;
+		if (!node->false_branch)
+			node->false_branch = std::make_shared<Node>(Node());
+		pathCondsCurrent = node->false_branch;
 	}
 }
 
@@ -60,24 +60,28 @@ Trace::getQuery(std::shared_ptr<BitVector> bv)
 }
 
 klee::Query
-Trace::newQuery(klee::ConstraintSet &cs, Branch::Path &path)
+Trace::newQuery(klee::ConstraintSet &cs, Path &path)
 {
 	size_t query_idx = path.size() - 1;
 	auto cm = klee::ConstraintManager(cs);
 
 	for (size_t i = 0; i < path.size(); i++) {
-		auto bv = path.at(i).first;
+		auto branch = path.at(i).first;
 		auto cond = path.at(i).second;
 
+		auto bv = branch->bv;
 		auto bvcond = (cond) ? bv->eqTrue() : bv->eqFalse();
+
 		if (i < query_idx) {
 			cm.addConstraint(bvcond->expr);
 			continue;
 		}
 
+		auto expr = cm.simplifyExpr(cs, bvcond->expr);
+
 		// This is the last expression on the path. By negating
 		// it we can potentially discover a new path.
-		auto expr = cm.simplifyExpr(cs, bvcond->expr);
+		branch->wasNegated = true;
 		return klee::Query(cs, expr).negateExpr();
 	}
 
@@ -92,8 +96,8 @@ Trace::findNewPath(void)
 	do {
 		klee::ConstraintSet cs;
 
-		Branch::Path path;
-		if (!pathCondsRoot->getRandomPath(path))
+		Path path;
+		if (!pathCondsRoot->randomUnnegated(path))
 			return std::nullopt; /* all branches exhausted */
 
 		auto query = newQuery(cs, path);

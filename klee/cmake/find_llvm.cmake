@@ -46,7 +46,7 @@ else()
   # Try to detect it in the user's environment. The user can force a particular
   # binary by passing `-DLLVM_CONFIG_BINARY=/path/to/llvm-config` to CMake.
   find_program(LLVM_CONFIG_BINARY
-    NAMES llvm-config)
+    NAMES llvm-config llvm10-config llvm11-config llvm12-config)
   message(STATUS "LLVM_CONFIG_BINARY: ${LLVM_CONFIG_BINARY}")
 
   if (NOT LLVM_CONFIG_BINARY)
