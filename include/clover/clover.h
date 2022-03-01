@@ -59,6 +59,7 @@ public:
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sge(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> ult(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> ule(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> uge(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> band(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> bor(std::shared_ptr<ConcolicValue> other);
