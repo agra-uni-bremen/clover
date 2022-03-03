@@ -1,3 +1,5 @@
+#include <queue>
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -19,7 +21,20 @@ Trace::Trace(Solver &_solver)
 
 Trace::~Trace(void)
 {
-	// TODO: Free node tree.
+	std::queue<Node *> nodes;
+
+	nodes.push(pathCondsRoot);
+	while (!nodes.empty()) {
+		Node *node = nodes.front();
+		nodes.pop();
+
+		if (node->true_branch)
+			nodes.push(node->true_branch);
+		if (node->false_branch)
+			nodes.push(node->false_branch);
+
+		delete node;
+	}
 }
 
 void
