@@ -13,8 +13,13 @@ using namespace clover;
 Trace::Trace(Solver &_solver)
     : solver(_solver), cm(cs)
 {
-	pathCondsRoot = std::make_shared<Node>(Node()); /* placeholder */
+	pathCondsRoot = new Node;
 	pathCondsCurrent = nullptr;
+}
+
+Trace::~Trace(void)
+{
+	// TODO: Free node tree.
 }
 
 void
@@ -30,7 +35,7 @@ Trace::add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc)
 	auto c = (condition) ? bv->eqTrue() : bv->eqFalse();
 	cm.addConstraint(c->expr);
 
-	std::shared_ptr<Node> node = nullptr;
+	Node *node = nullptr;
 	if (pathCondsCurrent != nullptr) {
 		node = pathCondsCurrent;
 	} else {
@@ -39,15 +44,15 @@ Trace::add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc)
 
 	assert(node);
 	if (node->isPlaceholder())
-		node->value = std::make_shared<Branch>(Branch(bv, false, pc));
+		node->value = std::make_shared<Branch>(bv, false, pc);
 
 	if (condition) {
 		if (!node->true_branch)
-			node->true_branch = std::make_shared<Node>(Node());
+			node->true_branch = new Node;
 		pathCondsCurrent = node->true_branch;
 	} else {
 		if (!node->false_branch)
-			node->false_branch = std::make_shared<Node>(Node());
+			node->false_branch = new Node;
 		pathCondsCurrent = node->false_branch;
 	}
 }
