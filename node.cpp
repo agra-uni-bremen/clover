@@ -25,6 +25,12 @@ Trace::Node::isPlaceholder(void)
 bool
 Trace::Node::randomUnnegated(Path &path)
 {
+	// TODO: Consider traversing tree iteratively instead of
+	// recursively. Otherwise, we might ran into a stack
+	// overflow with larger execution trees.
+	//
+	// See https://gitlab.informatik.uni-bremen.de/riscv/clover/-/issues/8
+
 	if (isPlaceholder())
 		return false;
 
