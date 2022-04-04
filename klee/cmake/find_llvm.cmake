@@ -46,7 +46,7 @@ else()
   # Try to detect it in the user's environment. The user can force a particular
   # binary by passing `-DLLVM_CONFIG_BINARY=/path/to/llvm-config` to CMake.
   find_program(LLVM_CONFIG_BINARY
-    NAMES llvm-config llvm10-config llvm11-config llvm12-config)
+    NAMES llvm-config llvm10-config llvm11-config llvm12-config llvm13-config)
   message(STATUS "LLVM_CONFIG_BINARY: ${LLVM_CONFIG_BINARY}")
 
   if (NOT LLVM_CONFIG_BINARY)
@@ -72,7 +72,7 @@ else()
   # Get LLVM version
   _run_llvm_config(LLVM_PACKAGE_VERSION "--version")
   # Try x.y.z patern
-  set(_llvm_version_regex "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(svn|git)?$")
+  set(_llvm_version_regex "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(svn|git|-rust-dev)?$")
   if ("${LLVM_PACKAGE_VERSION}" MATCHES "${_llvm_version_regex}")
     string(REGEX REPLACE
       "${_llvm_version_regex}"
@@ -175,9 +175,6 @@ else()
     set(targets_to_return "")
     set(created_targets "")
     foreach (llvm_lib ${_llvm_libs_list})
-      # a bug in llvm-config from LLVM 3.9
-      string(REGEX REPLACE "lib(libLLVM[-.a-zA-Z0-9]+\\.so)\\.so$" "\\1" llvm_lib "${llvm_lib}")
-
       get_filename_component(llvm_lib_file_name "${llvm_lib}" NAME)
 
       string(REGEX REPLACE "^(lib)?(LLVM[-.a-zA-Z0-9]+)\\..+$" "\\2" target_name "${llvm_lib_file_name}")

@@ -10,7 +10,7 @@
 ###############################################################################
 # Minimum CMake version and policies
 ###############################################################################
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.9.0)
 if (POLICY CMP0054)
   cmake_policy(SET CMP0054 NEW)
 endif()
@@ -39,7 +39,7 @@ include(CheckLibraryExists)
 # Project version
 ###############################################################################
 set(KLEE_VERSION_MAJOR 2)
-set(KLEE_VERSION_MINOR 2-pre)
+set(KLEE_VERSION_MINOR 3-pre)
 set(KLEE_VERSION "${KLEE_VERSION_MAJOR}.${KLEE_VERSION_MINOR}")
 
 # If a patch is needed, we can add KLEE_VERSION_PATCH
@@ -51,53 +51,12 @@ set(PACKAGE_STRING "\"KLEE ${KLEE_VERSION}\"")
 set(PACKAGE_URL "\"https://klee.github.io\"")
 
 ################################################################################
-# Set various useful variables depending on CMake version
-################################################################################
-set(ADD_CUSTOM_COMMAND_USES_TERMINAL_ARG "USES_TERMINAL")
-
-set(EXTERNAL_PROJECT_ADD_STEP_USES_TERMINAL_ARG "USES_TERMINAL" "1")
-
-################################################################################
 # Sanity check - Disallow building in source.
-# Otherwise we would overwrite the Makefiles of the old build system.
 ################################################################################
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
   message(FATAL_ERROR "In source builds are not allowed. You should invoke "
           "CMake from a different directory.")
 endif()
-
-################################################################################
-# Sanity Check: Check for in source build of the old build system.
-# Some build files from the old build system could interfere with our build.
-################################################################################
-set(KLEE_OLD_BUILD_SYSTEM_FILES
-  "include/klee/Config/config.h"
-  "test/lit.site.cfg"
-)
-foreach (legacy_file ${KLEE_OLD_BUILD_SYSTEM_FILES})
-  if (EXISTS "${PROJECT_SOURCE_DIR}/${legacy_file}")
-    if (EXISTS "${PROJECT_SOURCE_DIR}/.git")
-      set(CLEAN_SRC_DIR_INSTRUCTIONS
-        "The KLEE source tree apears to be a git repository so you can run"
-        " \"git clean -dxn\" to see what files aren't part of the repo and then"
-        " run \"git clean -fdx\" to remove them."
-      )
-    else()
-      # This is the only reliable way to fix this.
-      set(CLEAN_SRC_DIR_INSTRUCTIONS
-        "The KLEE source tree doesn't appear to be a git repository so you will"
-        " need to download a fresh copy of KLEE's source code."
-      )
-    endif()
-    message(FATAL_ERROR "\"${PROJECT_SOURCE_DIR}/${legacy_file}\""
-      " exists in KLEE's source tree. It is likely that the Autoconf/Makefile"
-      " build system was configured to do an in-source build in KLEE's source"
-      " tree. This could cause problems with the CMake build. "
-      ${CLEAN_SRC_DIR_INSTRUCTIONS}
-      " You can then run cmake again."
-    )
-  endif()
-endforeach()
 
 ################################################################################
 # Build type
@@ -113,7 +72,7 @@ else()
   if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "CMAKE_BUILD_TYPE is not set. Setting default")
     message(STATUS "The available build types are: ${available_build_types}")
-    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE String
+    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
         "Options are ${available_build_types}"
         FORCE)
     # Provide drop down menu options in cmake-gui
@@ -398,23 +357,6 @@ endif()
 include(${PROJECT_SOURCE_DIR}/cmake/workaround_llvm_pr39177.cmake)
 
 ################################################################################
-# Global clean target
-################################################################################
-# CMake already uses the "clean" target name but it doesn't clean everything
-# unfortunately. We can't modify the target so we provide our own "clean_all"
-# target that runs clean. Other rules for performing clean up should declare
-# that "clean_all" depends on those rules.
-add_custom_target(clean_all
-  # Invoke CMake's own clean target
-  COMMAND
-    "${CMAKE_COMMAND}"
-    "--build"
-    "${PROJECT_BINARY_DIR}"
-    "--target"
-    "clean"
-)
-
-################################################################################
 # KLEE uclibc support
 ################################################################################
 option(ENABLE_KLEE_UCLIBC "Enable support for klee-uclibc" OFF)
@@ -438,23 +380,13 @@ if (ENABLE_KLEE_UCLIBC)
   endif()
   message(STATUS "Found klee-uclibc library: \"${KLEE_UCLIBC_C_BCA}\"")
 
-  # Make a symlink to KLEE_UCLIBC_C_BCA so KLEE can find it where it
-  # is expected.
-  file(MAKE_DIRECTORY "${KLEE_RUNTIME_DIRECTORY}")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+  # Copy KLEE_UCLIBC_C_BCA so KLEE can find it where it is expected.
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy
     "${KLEE_UCLIBC_C_BCA}"
     "${KLEE_RUNTIME_DIRECTORY}/${KLEE_UCLIBC_BCA_NAME}"
   )
   list(APPEND KLEE_COMPONENT_CXX_DEFINES
     -DKLEE_UCLIBC_BCA_NAME=\"${KLEE_UCLIBC_BCA_NAME}\")
-
-  # Add klee-uclibc to the install target. We install the original
-  # file rather than the symlink because CMake would just copy the symlink
-  # rather than the file.
-  install(FILES "${KLEE_UCLIBC_C_BCA}"
-    DESTINATION "${KLEE_INSTALL_RUNTIME_DIR}"
-    RENAME "${KLEE_UCLIBC_BCA_NAME}"
-    )
 
 else()
   message(STATUS "klee-uclibc support disabled")
@@ -462,21 +394,26 @@ else()
 endif()
 
 ################################################################################
-# KLEE libcxx support
+# KLEE libc++ support
 ################################################################################
-option(ENABLE_KLEE_LIBCXX "Enable libcxx for klee" OFF)
+option(ENABLE_KLEE_LIBCXX "Enable libc++ for klee" OFF)
 if (ENABLE_KLEE_LIBCXX)
-  message(STATUS "klee-libcxx support enabled")
+  message(STATUS "klee-libc++ support enabled")
   set(SUPPORT_KLEE_LIBCXX 1) # For config.h
-  set(KLEE_LIBCXX_DIR "" CACHE PATH "Path to root directory with libcxx shared object")
+  set(KLEE_LIBCXX_DIR "" CACHE PATH "Path to directory containing libc++ shared object (bitcode)")
   if (NOT EXISTS "${KLEE_LIBCXX_DIR}")
     message(FATAL_ERROR
-      "${KLEE_LIBCXX_PATH} does not exist. Try passing -DKLEE_LIBCXX_DIR=<path>")
+      "KLEE_LIBCXX_DIR (\"${KLEE_LIBCXX_DIR}\") does not exist.\n"
+      "Try passing -DKLEE_LIBCXX_DIR=<path> to CMake where <path> is the path"
+      "to the directory containing the libc++ shared object file (as bitcode).")
   endif()
 
-  if (NOT IS_DIRECTORY "${KLEE_LIBCXX_INCLUDE_DIR}")
+  set(KLEE_LIBCXX_INCLUDE_DIR "" CACHE PATH "Path to libc++ include directory")
+  if (NOT EXISTS "${KLEE_LIBCXX_INCLUDE_DIR}")
     message(FATAL_ERROR
-      "${KLEE_LIBCXX_INCLUDE_DIR} does not exist. Try passing -DKLEE_LIBCXX_INCLUDE_DIR=<path>")
+      "KLEE_LIBCXX_INCLUDE_DIR (\"${KLEE_LIBCXX_INCLUDE_DIR}\") does not exist.\n"
+      "Try passing -DKLEE_LIBCXX_INCLUDE_DIR=<path> to CMake where <path> is the"
+      "libc++ include directory.")
   endif()
   message(STATUS "Use libc++ include path: \"${KLEE_LIBCXX_INCLUDE_DIR}\"")
 
@@ -500,27 +437,49 @@ if (ENABLE_KLEE_LIBCXX)
   endif()
   message(STATUS "Found libc++ library: \"${KLEE_LIBCXX_BC_PATH}\"")
 
-  # Make a symlink to KLEE_LIBCXX_EXTERNAL_OBJECT so KLEE can find it where it
-  # is expected.
+  # Copy KLEE_LIBCXX_BC_PATH so KLEE can find it where it is expected.
   file(MAKE_DIRECTORY "${KLEE_RUNTIME_DIRECTORY}")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy
     "${KLEE_LIBCXX_BC_PATH}"
     "${KLEE_RUNTIME_DIRECTORY}/${KLEE_LIBCXX_BC_NAME}"
   )
   list(APPEND KLEE_COMPONENT_CXX_DEFINES
     -DKLEE_LIBCXX_BC_NAME=\"${KLEE_LIBCXX_BC_NAME}\")
 
-  # Add libcxx to the install target. We install the original
-  # file rather than the symlink because CMake would just copy the symlink
-  # rather than the file.
-  install(FILES "${KLEE_LIBCXX_BC_PATH}"
-    DESTINATION "${KLEE_INSTALL_RUNTIME_DIR}"
-    RENAME "${KLEE_LIBCXX_BC_NAME}"
-    )
-
 else()
   message(STATUS "libc++ support disabled")
   set(SUPPORT_KLEE_LIBCXX 0) # For config.h
+endif()
+
+################################################################################
+# KLEE Exception Handling Support for C++
+################################################################################
+option(ENABLE_KLEE_EH_CXX "Enable support for C++ Exceptions" OFF)
+if (ENABLE_KLEE_EH_CXX)
+  if (NOT ENABLE_KLEE_LIBCXX)
+    message(FATAL_ERROR "C++ Exception support requires klee-libc++."
+      "Pass -DENABLE_KLEE_LIBCXX=ON to CMake to enable it.")
+  endif()
+
+  set(KLEE_LIBCXXABI_SRC_DIR "" CACHE PATH "Path to libc++abi source directory")
+  if (NOT EXISTS "${KLEE_LIBCXXABI_SRC_DIR}")
+    message(FATAL_ERROR
+      "KLEE_LIBCXXABI_SRC_DIR (\"${KLEE_LIBCXXABI_SRC_DIR}\") does not exist.\n"
+      "Try passing -DKLEE_LIBCXXABI_SRC_DIR=<path> to CMake where <path> is the"
+      "libc++abi source directory.")
+  endif()
+  message(STATUS "Use libc++abi source path: \"${KLEE_LIBCXXABI_SRC_DIR}\"")
+
+  if (${LLVM_VERSION_MAJOR} GREATER 8 OR ${LLVM_VERSION_MAJOR} EQUAL 8)
+    set(SUPPORT_KLEE_EH_CXX 1) # For config.h
+    message(STATUS "Support for C++ Exceptions enabled")
+  else()
+    set(SUPPORT_KLEE_EH_CXX 0) # For config.h
+    message(STATUS "Support for C++ Exceptions (only available for LLVM >= 8.0.0) disabled")
+  endif()
+
+else()
+  set(SUPPORT_KLEE_EH_CXX 0) # For config.h
 endif()
 
 ################################################################################
@@ -601,3 +560,19 @@ add_subdirectory(lib)
 # Miscellaneous install
 ################################################################################
 install(FILES include/klee/klee.h DESTINATION include/klee)
+
+################################################################################
+# Uninstall rule
+################################################################################
+configure_file(
+  "${PROJECT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+  "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake"
+	@ONLY
+)
+
+add_custom_target(uninstall
+  COMMAND
+  "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake"
+  COMMENT "Uninstalling..."
+  VERBATIM
+)

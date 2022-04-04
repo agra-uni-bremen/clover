@@ -16,11 +16,11 @@
 #include "klee/Expr/Assignment.h"
 #include "klee/Expr/AssignmentGenerator.h"
 #include "klee/Expr/ExprBuilder.h"
-#include "klee/Support/OptionCategories.h"
+#include "klee/Support/Casting.h"
 #include "klee/Support/ErrorHandling.h"
+#include "klee/Support/OptionCategories.h"
 
 #include <llvm/ADT/APInt.h>
-#include <llvm/Support/Casting.h>
 #include <llvm/Support/CommandLine.h>
 
 #include <algorithm>
@@ -38,8 +38,7 @@ llvm::cl::opt<ArrayOptimizationType> OptimizeArray(
                      clEnumValN(INDEX, "index", "Index-based transformation"),
                      clEnumValN(VALUE, "value",
                                 "Value-based transformation at branch (both "
-                                "concrete and concrete/symbolic)")
-                         KLEE_LLVM_CL_VAL_END),
+                                "concrete and concrete/symbolic)")),
     llvm::cl::init(NONE),
     llvm::cl::desc("Optimize accesses to either concrete or concrete/symbolic "
                    "arrays. (default=false)"),
@@ -147,7 +146,7 @@ ref<Expr> ExprOptimizer::optimizeExpr(const ref<Expr> &e, bool valueOnly) {
           result = ConstantExpr::create(0, Expr::Bool);
         }
         // Add new expression to cache
-        if (result.get()) {
+        if (result) {
           klee_warning("OPT_I: successful");
           cacheExprOptimized[e] = result;
         } else {
@@ -161,7 +160,7 @@ ref<Expr> ExprOptimizer::optimizeExpr(const ref<Expr> &e, bool valueOnly) {
   }
   // ----------------------- VALUE-BASED OPTIMIZATION -------------------------
   if (OptimizeArray == VALUE ||
-      (OptimizeArray == ALL && (!result.get() || valueOnly))) {
+      (OptimizeArray == ALL && (!result || valueOnly))) {
     std::vector<const ReadExpr *> reads;
     std::map<const ReadExpr *, std::pair<ref<Expr>, Expr::Width>> readInfo;
     ArrayReadExprVisitor are(reads, readInfo);
@@ -175,7 +174,7 @@ ref<Expr> ExprOptimizer::optimizeExpr(const ref<Expr> &e, bool valueOnly) {
 
     ref<Expr> selectOpt =
         getSelectOptExpr(e, reads, readInfo, are.containsSymbolic());
-    if (selectOpt.get()) {
+    if (selectOpt) {
       klee_warning("OPT_V: successful");
       result = selectOpt;
       cacheExprOptimized[e] = result;
@@ -184,7 +183,7 @@ ref<Expr> ExprOptimizer::optimizeExpr(const ref<Expr> &e, bool valueOnly) {
       cacheExprUnapplicable.insert(e);
     }
   }
-  if (result.isNull())
+  if (!result)
     return e;
   return result;
 }
@@ -204,12 +203,11 @@ bool ExprOptimizer::computeIndexes(array2idx_ty &arrays, const ref<Expr> &e,
     assert((idxt_v.getWidth() % arr->range == 0) && "Read is not aligned");
     Expr::Width width = idxt_v.getWidth() / arr->range;
 
-    if (idxt_v.getMul().get()) {
+    if (auto e = idxt_v.getMul()) {
       // If we have a MulExpr in the index, we can optimize our search by
       // skipping all those indexes that are not multiple of such value.
       // In fact, they will be rejected by the MulExpr interpreter since it
       // will not find any integer solution
-      auto e = idxt_v.getMul();
       auto ce = dyn_cast<ConstantExpr>(e);
       assert(ce && "Not a constant expression");
       uint64_t mulVal = (*ce->getAPValue().getRawData());
@@ -320,7 +318,7 @@ ref<Expr> ExprOptimizer::getSelectOptExpr(
 
       ref<Expr> opt =
           buildConstantSelectExpr(index, arrayValues, width, elementsInArray);
-      if (opt.get()) {
+      if (opt) {
         cacheReadExprOptimized[const_cast<ReadExpr *>(read)] = opt;
         optimized.insert(std::make_pair(info.first, opt));
       }
@@ -418,7 +416,7 @@ ref<Expr> ExprOptimizer::getSelectOptExpr(
         // Build the dynamic select expression
         ref<Expr> opt =
             buildMixedSelectExpr(read, arrayValues, width, elementsInArray);
-        if (opt.get()) {
+        if (opt) {
           cacheReadExprOptimized[const_cast<ReadExpr *>(read)] = opt;
           optimized.insert(std::make_pair(info.first, opt));
         }
@@ -428,7 +426,7 @@ ref<Expr> ExprOptimizer::getSelectOptExpr(
     toReturn = replacer.visit(e);
   }
 
-  return toReturn.get() ? toReturn : notFound;
+  return toReturn ? toReturn : notFound;
 }
 
 ref<Expr> ExprOptimizer::buildConstantSelectExpr(

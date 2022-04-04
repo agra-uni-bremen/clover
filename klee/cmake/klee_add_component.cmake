@@ -14,8 +14,7 @@ function(klee_add_component target_name)
   # In newer CMakes we can make sure that the flags are only used when compiling C++
   target_compile_options(${target_name} PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:${KLEE_COMPONENT_CXX_FLAGS}>)
-  target_include_directories(${target_name} PUBLIC "${PROJECT_BINARY_DIR}/include" "${PROJECT_SOURCE_DIR}/include")
-  target_include_directories(${target_name} PUBLIC ${KLEE_COMPONENT_EXTRA_INCLUDE_DIRS})
-  target_compile_definitions(${target_name} PRIVATE ${KLEE_COMPONENT_CXX_DEFINES})
-  target_link_libraries(${target_name} PRIVATE ${KLEE_COMPONENT_EXTRA_LIBRARIES})
+  target_include_directories(${target_name} PUBLIC "${PROJECT_BINARY_DIR}/include" "${PROJECT_SOURCE_DIR}/include" ${KLEE_COMPONENT_EXTRA_INCLUDE_DIRS})
+  target_compile_definitions(${target_name} PUBLIC ${KLEE_COMPONENT_CXX_DEFINES})
+  target_link_libraries(${target_name} PUBLIC ${KLEE_COMPONENT_EXTRA_LIBRARIES})
 endfunction()

@@ -59,7 +59,7 @@ Solver::getAssignment(const klee::Query &query)
 	// Check if the is alwyas false (e.g. true due to the negation)
 	// and return if it is. Otherwise triggers an assert statement
 	// in the getAllIndependentConstraintsSets function.
-	auto ce = dyn_cast<klee::ConstantExpr>(nq.expr);
+	auto ce = klee::dyn_cast<klee::ConstantExpr>(nq.expr);
 	if (ce && ce->isTrue())
 		return std::nullopt;
 

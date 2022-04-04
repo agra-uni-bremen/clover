@@ -15,8 +15,6 @@ klee_add_component(kleeSupport
   TreeStream.cpp
 )
 
-target_link_libraries(kleeSupport PRIVATE)
-
 set(LLVM_COMPONENTS
   support
 )

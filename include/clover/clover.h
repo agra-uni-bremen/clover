@@ -10,6 +10,7 @@
 #include <klee/Expr/Expr.h>
 #include <klee/Expr/ExprBuilder.h>
 #include <klee/Solver/Solver.h>
+#include <klee/Support/Casting.h>
 
 #include <fstream>
 #include <map>
@@ -119,7 +120,7 @@ public:
 	{
 		// Since we don't have constraints here, these function
 		// only works on ConstantExpr as provided by ->concrete.
-		klee::ConstantExpr *ce = dyn_cast<klee::ConstantExpr>(bv->expr);
+		klee::ConstantExpr *ce = klee::dyn_cast<klee::ConstantExpr>(bv->expr);
 		assert(ce && "getValue only works on constants");
 
 		return ce->getZExtValue(sizeof(T) * 8);

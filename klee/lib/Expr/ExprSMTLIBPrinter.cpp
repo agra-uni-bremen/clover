@@ -8,8 +8,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "klee/Expr/ExprSMTLIBPrinter.h"
+#include "klee/Support/Casting.h"
 
-#include "llvm/Support/Casting.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/ErrorHandling.h"
 
@@ -27,8 +27,7 @@ llvm::cl::opt<klee::ExprSMTLIBPrinter::ConstantDisplayMode>
                          clEnumValN(klee::ExprSMTLIBPrinter::HEX, "hex",
                                     "Use Hexadecimal form (e.g. #x2D)"),
                          clEnumValN(klee::ExprSMTLIBPrinter::DECIMAL, "dec",
-                                    "Use decimal form (e.g. (_ bv45 8) )")
-                             KLEE_LLVM_CL_VAL_END),
+                                    "Use decimal form (e.g. (_ bv45 8) )")),
         llvm::cl::init(klee::ExprSMTLIBPrinter::DECIMAL),
         llvm::cl::cat(klee::ExprCat));
 
@@ -47,8 +46,7 @@ llvm::cl::opt<klee::ExprSMTLIBPrinter::AbbreviationMode> abbreviationMode(
                      clEnumValN(klee::ExprSMTLIBPrinter::ABBR_LET, "let",
                                 "Abbreviate with let"),
                      clEnumValN(klee::ExprSMTLIBPrinter::ABBR_NAMED, "named",
-                                "Abbreviate with :named annotations")
-                         KLEE_LLVM_CL_VAL_END),
+                                "Abbreviate with :named annotations")),
     llvm::cl::init(klee::ExprSMTLIBPrinter::ABBR_LET),
     llvm::cl::cat(klee::ExprCat));
 } // namespace ExprSMTLIBOptions
@@ -692,7 +690,7 @@ void ExprSMTLIBPrinter::printAction() {
 }
 
 void ExprSMTLIBPrinter::scan(const ref<Expr> &e) {
-  assert(!(e.isNull()) && "found NULL expression");
+  assert(e && "found NULL expression");
 
   if (isa<ConstantExpr>(e))
     return; // we don't need to scan simple constants

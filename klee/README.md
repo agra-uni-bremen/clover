@@ -1,6 +1,6 @@
 # KLEE
 
-This is a stripped down version of KLEE (088fc21e12c9675161172899be5ef5051f1ae96b).
+This is a stripped down version of KLEE (dfec2ced4e90e745631331ee087f19224df864a0).
 
 ## Dependencies
 
