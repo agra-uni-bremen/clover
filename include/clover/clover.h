@@ -59,6 +59,7 @@ public:
 	std::shared_ptr<ConcolicValue> slt(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> sge(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> ult(std::shared_ptr<ConcolicValue> other);
+	std::shared_ptr<ConcolicValue> ule(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> uge(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> band(std::shared_ptr<ConcolicValue> other);
 	std::shared_ptr<ConcolicValue> bor(std::shared_ptr<ConcolicValue> other);
@@ -189,8 +190,13 @@ private:
 	public:
 		std::shared_ptr<Branch> value;
 
-		std::shared_ptr<Node> true_branch;
-		std::shared_ptr<Node> false_branch;
+		// Not a shared pointer since it would then be free'ed
+		// recursively which can lead to a stack overflow on
+		// larger execution trees.
+		//
+		// See https://gitlab.informatik.uni-bremen.de/riscv/clover/-/issues/8
+		Node *true_branch;
+		Node *false_branch;
 
 		Node(void);
 		bool isPlaceholder(void);
@@ -209,14 +215,15 @@ private:
 	klee::ConstraintSet cs;
 	klee::ConstraintManager cm;
 
-	std::shared_ptr<Node> pathCondsRoot;
-	std::shared_ptr<Node> pathCondsCurrent;
+	Node *pathCondsRoot;
+	Node *pathCondsCurrent;
 
 	/* Create new query for path in execution tree. */
 	klee::Query newQuery(klee::ConstraintSet &cs, Path &path);
 
 public:
 	Trace(Solver &_solver);
+	~Trace(void);
 	void reset(void);
 
 	/* Add bv as constraint to ConstraintSet and as node in tree. */
