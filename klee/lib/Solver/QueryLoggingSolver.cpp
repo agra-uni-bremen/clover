@@ -40,7 +40,11 @@ QueryLoggingSolver::QueryLoggingSolver(Solver *_solver, std::string path,
 #ifdef HAVE_ZLIB_H
   if (!CreateCompressedQueryLog) {
 #endif
+#if 0
     os = klee_open_output_file(path, error);
+#else
+    klee_error("Query logging currently not supported");
+#endif
 #ifdef HAVE_ZLIB_H
   } else {
     path.append(".gz");
