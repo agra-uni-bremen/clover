@@ -207,24 +207,6 @@ endif()
 list(APPEND KLEE_COMPONENT_CXX_DEFINES ${LLVM_DEFINITIONS})
 list(APPEND KLEE_COMPONENT_EXTRA_INCLUDE_DIRS ${LLVM_INCLUDE_DIRS})
 
-# Find llvm-link
-set(LLVM_LINK "${LLVM_TOOLS_BINARY_DIR}/llvm-link")
-if (NOT EXISTS "${LLVM_LINK}")
-  message(FATAL_ERROR "Failed to find llvm-link at \"${LLVM_LINK}\"")
-endif()
-
-# Find llvm-ar
-set(LLVM_AR "${LLVM_TOOLS_BINARY_DIR}/llvm-ar")
-if (NOT EXISTS "${LLVM_AR}")
-  message(FATAL_ERROR "Failed to find llvm-ar at \"${LLVM_AR}\"")
-endif()
-
-# Find llvm-as
-set(LLVM_AS "${LLVM_TOOLS_BINARY_DIR}/llvm-as")
-if (NOT EXISTS "${LLVM_AS}")
-  message(FATAL_ERROR "Failed to find llvm-as at \"${LLVM_AS}\"")
-endif()
-
 ################################################################################
 # C++ version
 ################################################################################
