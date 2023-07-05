@@ -46,3 +46,14 @@ BitVector::eqFalse(void)
 	auto expr = klee::EqExpr::alloc(this->expr, klee::ConstantExpr::alloc(0, klee::Expr::Bool));
 	return std::make_shared<BitVector>(BitVector(expr));
 }
+
+bool
+BitVector::isTrue(void)
+{
+	assert(expr->getWidth() == klee::Expr::Bool && "Invalid expression type!");
+
+	klee::ConstantExpr *ce = klee::dyn_cast<klee::ConstantExpr>(expr);
+	assert(ce && "isTrue only works on constants");
+
+	return ce->isTrue();
+}

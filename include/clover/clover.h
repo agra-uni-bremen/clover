@@ -36,6 +36,11 @@ private:
 	friend class ConcolicValue;
 	friend class Solver;
 	friend class Trace;
+
+public:
+	/* Whether the BitVector represents a truth value.
+	 * Can only be used on constant BitVector values. */
+	bool isTrue(void);
 };
 
 class ConcolicValue {
