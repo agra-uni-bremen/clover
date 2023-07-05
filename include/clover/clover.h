@@ -100,24 +100,11 @@ public:
 
 	void setTimeout(klee::time::Span timeout);
 	std::optional<klee::Assignment> getAssignment(const klee::Query &query);
-
-	bool eval(const klee::Query &query);
 	std::shared_ptr<ConcolicValue> BVC(std::optional<std::string> name, IntValue value);
 
 	/* Methods for converting between concolic values and uint8_t buffers */
 	std::shared_ptr<ConcolicValue> BVC(uint8_t *buf, size_t buflen, bool lsb = false);
 	void BVCToBytes(std::shared_ptr<ConcolicValue> value, uint8_t *buf, size_t buflen);
-
-	template <typename T>
-	T evalValue(const klee::Query &query)
-	{
-		klee::ref<klee::ConstantExpr> r;
-
-		if (!solver->getValue(query, r))
-			throw std::runtime_error("getValue() failed for solver");
-
-		return (T)r->getZExtValue(sizeof(T) * 8);
-	}
 
 	/* Convert the concrete part of a ConcolicValue to a C type. */
 	template <typename T>
@@ -153,17 +140,10 @@ public:
 typedef std::map<std::string, IntValue> ConcreteStore;
 
 /**
- * The Tracer fullfills two tasks:
- *
- *   1. It iteratively creates an execution tree where each node
- *      constitutes a branch condition. This tree is then used
- *      to find new assignments for symbolic input variables
- *      based on a Dynamic Symbolic Execution (DSE) algorithm.
- *
- *   2. It tracks the current constraints for the currently
- *      executed path for the program. As such, allowing the
- *      creation of properly constrained queries using getQuery().
- *      These queries can then be solved using the Solver class.
+ * The Tracer iteratively creates an execution tree where each node
+ * constitutes a branch condition. This tree is then used to find new
+ * assignments for symbolic input variables based on a Dynamic Symbolic
+ * Execution (DSE) algorithm.
  */
 class Trace {
 private:
@@ -218,8 +198,6 @@ private:
 	};
 
 	Solver &solver;
-	klee::ConstraintSet cs;
-	klee::ConstraintManager cm;
 
 	Node *pathCondsRoot;
 	Node *pathCondsCurrent;
@@ -234,9 +212,6 @@ public:
 
 	/* Add bv as constraint to ConstraintSet and as node in tree. */
 	void add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc);
-
-	/* Create query from BitVector with currently tracked constraints. */
-	klee::Query getQuery(std::shared_ptr<BitVector> bv);
 
 	std::optional<klee::Assignment> findNewPath(void);
 	ConcreteStore getStore(const klee::Assignment &assign);

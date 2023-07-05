@@ -13,7 +13,7 @@
 using namespace clover;
 
 Trace::Trace(Solver &_solver)
-    : solver(_solver), cm(cs)
+    : solver(_solver)
 {
 	pathCondsRoot = new Node;
 	pathCondsCurrent = nullptr;
@@ -40,7 +40,6 @@ Trace::~Trace(void)
 void
 Trace::reset(void)
 {
-	cs = klee::ConstraintSet();
 	pathCondsCurrent = nullptr;
 }
 
@@ -48,7 +47,6 @@ void
 Trace::add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc)
 {
 	auto c = (condition) ? bv->eqTrue() : bv->eqFalse();
-	cm.addConstraint(c->expr);
 
 	Node *node = nullptr;
 	if (pathCondsCurrent != nullptr) {
@@ -70,13 +68,6 @@ Trace::add(bool condition, std::shared_ptr<BitVector> bv, uint32_t pc)
 			node->false_branch = new Node;
 		pathCondsCurrent = node->false_branch;
 	}
-}
-
-klee::Query
-Trace::getQuery(std::shared_ptr<BitVector> bv)
-{
-	auto expr = cm.simplifyExpr(cs, bv->expr);
-	return klee::Query(cs, expr);
 }
 
 klee::Query

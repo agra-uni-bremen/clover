@@ -70,27 +70,6 @@ Solver::getAssignment(const klee::Query &query)
 	return klee::Assignment(objects, values);
 }
 
-bool
-Solver::eval(const klee::Query &query)
-{
-	klee::Solver::Validity v;
-
-	if (!solver->evaluate(query, v))
-		throw std::runtime_error("solver failed to evaluate query");
-
-	switch (v) {
-	case klee::Solver::True:
-		return true;
-	case klee::Solver::False:
-		return false;
-	case klee::Solver::Unknown:
-		throw std::logic_error("unknown solver result");
-	}
-
-	assert(0); /* unreachable */
-	return false;
-}
-
 std::shared_ptr<ConcolicValue>
 Solver::BVC(std::optional<std::string> name, IntValue value)
 {
